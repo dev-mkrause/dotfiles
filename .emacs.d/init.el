@@ -189,7 +189,8 @@
   :custom
   (newsticker-url-list-defaults '())
   (newsticker-url-list
-   '(("Protesilaos Blog" "https://protesilaos.com/master.xml" nil nil nil))))
+   '(("Protesilaos Blog" "https://protesilaos.com/master.xml" nil nil nil)
+     ("Baeldung Scala" "https://feeds.feedblitz.com/baeldung/scala" nil nil nil))))
 
 ;; Look and feel
 (use-package all-the-icons)
