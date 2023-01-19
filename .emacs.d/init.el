@@ -146,6 +146,7 @@
 ;; Python
 ;; Add eldoc mode hook for python mode
 (use-package python-mode
+  :bind ("C-c p p" . poetry)
   :hook (python-mode . eldoc-mode)
   :custom (python-indent-guess-indent-offset-verbose nil))
 
@@ -156,8 +157,6 @@
   (add-hook 'pyvenv-post-activate-hooks #'pyvenv-restart-python))
 
 (use-package poetry
-  :bind (:map python-mode-map
-	      ("C-c C-p" . poetry))
   :hook
   (python-mode . poetry-tracking-mode))
 
