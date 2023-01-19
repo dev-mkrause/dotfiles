@@ -77,20 +77,34 @@
 
 
 ;; Zettelkasten
+(defvar mk-roam-directory (concat mk-org-directory "/roam"))
+(defvar mk-bibliography (concat mk-roam-directory "/bibliography"))
+(defvar mk-bibliography-bibfile (concat mk-bibliography "/bibliography.bib"))
+
+(defun mk-open-bibliography-bibfile ()
+  "Open `mk-bibliography-bibfile`."
+  (interactive)
+  (find-file mk-bibliography-bibfile))
+
 (use-package org-roam
-  :bind
-  (("C-c n r f" . org-roam-node-find)
-   ("C-c n r i" . org-roam-node-insert)
-   ("C-c n r t" . org-roam-tag-tag)
-   ("C-c n r T" . org-roam-tag-remove)
-   ("C-c n r r" . org-roam-ref-add)
-   ("C-c n r R" . org-roam-ref-remove)
-   ("C-c n r s" . org-roam-db-sync)
-   ("C-c n r b" . org-roam-buffer-toggle))
+  :bind (("C-C n r f" . org-roam-node-find)
+	 ("C-c n r i" . org-roam-node-insert)
+	 ("C-c n r t" . org-roam-tag-tag)
+	 ("C-c n r T" . org-roam-tag-remove)
+	 ("C-c n r r" . org-roam-ref-add)
+	 ("C-c n r R" . org-roam-ref-remove)
+	 ("C-c n r s" . org-roam-db-sync)
+	 ("C-c n r b" . org-roam-buffer-toggle)
+	 ("C-c n r P" . mk-open-bibliography-bibfile))
   :custom (org-roam-directory (concat mk-org-directory "/roam")))
 
-(use-package citar)
-(use-package citar-org-roam)
+(use-package citar
+  :custom
+  (citar-bibliography `(,(concat mk-bibliography "/bibliography.bib"))))
+(use-package citar-org-roam
+  :after citar org-roam
+  :no-require
+  :config (citar-org-roam-mode))
 
 
 ;; Scala
