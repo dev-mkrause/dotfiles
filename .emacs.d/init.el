@@ -144,6 +144,13 @@
 	      ("C-c C-n" . numpydoc-generate)))
 
 
+(use-package flymake
+  :hook prog-mode
+  :bind (:map flymake-mode-map
+	      ("M-p" . flymake-goto-prev-error)
+	      ("M-n" . flymake-goto-next-error)))
+
+
 (use-package ace-window
   :bind ("M-o" . #'ace-window))
 
