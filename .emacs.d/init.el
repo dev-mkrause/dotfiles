@@ -71,9 +71,13 @@
 
 ;; Org & Agenda
 (defvar mk-org-directory (concat mk-alexandria-dir "/org"))
+(defvar mk-agenda-directory (concat mk-org-directory "/agenda/"))
 (use-package org
+  :bind
+  (("C-c n a" . org-agenda))
   :custom
-  org-directory mk-org-directory)
+  (org-directory mk-org-directory)
+  (org-agenda-files `(,(expand-file-name mk-agenda-directory))))
 
 
 ;; Zettelkasten
