@@ -174,6 +174,7 @@
 (setq display-line-numbers 'relative)
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 
+(add-hook 'prog-mode-hook #'electric-pair-mode)
 ;; Backups
 (setq make-backup-files nil)
 
