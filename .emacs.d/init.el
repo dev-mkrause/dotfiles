@@ -172,6 +172,13 @@
   (which-key-mode))
 
 
+;; Newsticker
+(use-package newsticker
+  :custom
+  (newsticker-url-list-defaults '())
+  (newsticker-url-list
+   '(("Protesilaos Blog" "https://protesilaos.com/master.xml" nil nil nil))))
+
 ;; Look and feel
 (use-package all-the-icons)
 
@@ -187,6 +194,7 @@
 (setq display-line-numbers 'relative)
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 
+;; Autocomplete parenthesis in prog modes
 (add-hook 'prog-mode-hook #'electric-pair-mode)
 
 ;; Backups
