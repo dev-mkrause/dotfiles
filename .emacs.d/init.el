@@ -44,6 +44,20 @@
 (use-package magit)
 
 
+;; Manage yadm dotfiles with magit
+(require 'tramp)
+(add-to-list 'tramp-methods
+ '("yadm"
+   (tramp-login-program "yadm")
+   (tramp-login-args (("enter")))
+   (tramp-login-env (("SHELL") ("/bin/sh")))
+   (tramp-remote-shell "/bin/sh")
+   (tramp-remote-shell-args ("-c"))))
+(global-set-key (kbd "C-c C-d d") #'(lambda ()
+				      (interactive)
+				      (magit-status "/yadm::")))
+
+
 (use-package eglot
   :hook (python-mode . eglot-ensure)
   :config
