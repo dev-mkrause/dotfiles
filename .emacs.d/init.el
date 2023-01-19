@@ -45,8 +45,36 @@
 
 
 (use-package eglot
+  :hook (python-mode . eglot-ensure)
   :config
   (setq eglot-autoshutdown t))
+
+
+;; Python
+(use-package python-mode
+  :hook
+  (python-mode . eldoc-mode)
+  :config (setq python-indent-guess-indent-offset-verbose nil))
+
+(use-package pyvenv
+  :hook
+  (python-mode)
+  :init
+  (add-hook 'pyvenv-post-activate-hooks #'pyvenv-restart-python))
+
+(use-package poetry
+  :bind (:map python-mode-map
+	      ("C-c C-p" . poetry))
+  :hook
+  (python-mode . poetry-tracking-mode))
+
+(use-package blacken
+  :hook
+  (python-mode))
+
+(use-package numpydoc
+  :bind (:map python-mode-map
+	      ("C-c C-n" . numpydoc-generate)))
 
 
 (use-package ace-window
@@ -74,5 +102,7 @@
 
 ;; Backups
 (setq make-backup-files nil)
+
+
 
 (setq custom-file "~/.emacs.d/custom.el")
