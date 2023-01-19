@@ -1,3 +1,9 @@
+;;; init.el --- Marvin's personal Emacs configuration.  -*- lexical-binding: t; -*-
+;; Copyright (C) 2023  Marvin Krause
+
+;; Author: Marvin Krause <pub@dev-mkrause.de>
+;;; Commentary:
+
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
@@ -48,12 +54,12 @@
 ;; Manage yadm dotfiles with magit
 (require 'tramp)
 (add-to-list 'tramp-methods
- '("yadm"
-   (tramp-login-program "yadm")
-   (tramp-login-args (("enter")))
-   (tramp-login-env (("SHELL") ("/bin/sh")))
-   (tramp-remote-shell "/bin/sh")
-   (tramp-remote-shell-args ("-c"))))
+	     '("yadm"
+	       (tramp-login-program "yadm")
+	       (tramp-login-args (("enter")))
+	       (tramp-login-env (("SHELL") ("/bin/sh")))
+	       (tramp-remote-shell "/bin/sh")
+	       (tramp-remote-shell-args ("-c"))))
 
 (defun mk-yadm ()
   "Open magit connected to yadm over tramp."
@@ -94,7 +100,7 @@
 (use-package org-roam
   :config
   (cl-defmethod org-roam-node-type ((node org-roam-node))
-    "Return the TYPE of NODE, inferred by directory NODE is stored in.."
+    "Return the TYPE of NODE, inferred by directory NODE is stored in."
     (condition-case nil
 	(file-name-nondirectory
 	 (directory-file-name
@@ -211,3 +217,4 @@
 (setq custom-file "~/.emacs.d/custom.el")
 
 (set-face-attribute 'default nil :font "Terminus" :height 130)
+;;; init.el ends here
