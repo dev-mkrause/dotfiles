@@ -216,5 +216,5 @@
 ;; Store custom values in own file
 (setq custom-file "~/.emacs.d/custom.el")
 
-(set-face-attribute 'default nil :font "Terminus" :height 130)
+(set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
 ;;; init.el ends here
