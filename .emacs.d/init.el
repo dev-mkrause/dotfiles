@@ -54,9 +54,12 @@
    (tramp-login-env (("SHELL") ("/bin/sh")))
    (tramp-remote-shell "/bin/sh")
    (tramp-remote-shell-args ("-c"))))
-(global-set-key (kbd "C-c C-d d") #'(lambda ()
-				      (interactive)
-				      (magit-status "/yadm::")))
+
+(defun mk-yadm ()
+  "Open magit connected to yadm over tramp"
+  (interactive)
+  (magit-status "/yadm::"))
+(global-set-key (kbd "C-c C-d d") #'mk-yadm)
 
 
 (use-package eglot
