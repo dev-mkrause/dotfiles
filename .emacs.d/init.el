@@ -5,7 +5,7 @@
 (setq use-package-always-ensure t
       use-package-always-defer t)
 
-(defvar alexandria-dir "~/Nextcloud/alexandria")
+(defvar mk-alexandria-dir "~/Nextcloud/alexandria")
 
 ;; Completion Framework
 (use-package vertico
