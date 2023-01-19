@@ -86,6 +86,17 @@
   (interactive)
   (find-file mk-bibliography-bibfile))
 
+
+(cl-defmethod org-roam-node-type ((node org-roam-node))
+  "Return the TYPE of NODE, inferred by directory NODE is stored in.."
+  (condition-case nil
+      (file-name-nondirectory
+       (directory-file-name
+        (file-name-directory
+         (file-relative-name (org-roam-node-file node) org-roam-directory))))
+    (error "")))
+
+
 (use-package org-roam
   :bind (("C-C n r f" . org-roam-node-find)
 	 ("C-c n r i" . org-roam-node-insert)
@@ -96,7 +107,9 @@
 	 ("C-c n r s" . org-roam-db-sync)
 	 ("C-c n r b" . org-roam-buffer-toggle)
 	 ("C-c n r P" . mk-open-bibliography-bibfile))
-  :custom (org-roam-directory (concat mk-org-directory "/roam")))
+  :custom (org-roam-directory (concat mk-org-directory "/roam"))
+  (org-roam-node-display-template
+      (concat "${type:15} ${title:*} " (propertize "${tags:10}" 'face 'org-tag))))
 
 (use-package citar
   :custom
