@@ -69,6 +69,11 @@
   (setq eglot-autoshutdown t))
 
 
+;; Org & Agenda
+(defvar mk-org-directory (concat mk-alexandria-dir "/org"))
+(use-package org
+  :custom
+  org-directory mk-org-directory)
 ;; Scala
 ;; Enable scala-mode and sbt-mode
 (use-package scala-mode
