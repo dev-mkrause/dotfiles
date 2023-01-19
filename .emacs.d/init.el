@@ -9,8 +9,8 @@
 
 ;; Completion Framework
 (use-package vertico
-  :config
-  (setq vertico-cycle t)
+  :custom
+  (vertico-cycle t)
   :init
   (vertico-mode))
 
@@ -30,14 +30,15 @@
 (use-package embark-consult)
 
 (use-package orderless
-  :init
-  (setq completion-styles '(orderless)))
-
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
 
 (use-package company-box
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-show-quick-access t)
   :init
-  (setq company-minimum-prefix-length 1)
-  (setq company-show-quick-access t)
   (global-company-mode))
 
 
@@ -60,7 +61,8 @@
 
 (use-package eglot
   :hook (python-mode . eglot-ensure)
-  :config
+  (scala-mode . eglot-ensure)
+  :custom
   (setq eglot-autoshutdown t))
 
 
@@ -68,7 +70,7 @@
 (use-package python-mode
   :hook
   (python-mode . eldoc-mode)
-  :config (setq python-indent-guess-indent-offset-verbose nil))
+  :custom (python-indent-guess-indent-offset-verbose nil))
 
 (use-package pyvenv
   :hook
