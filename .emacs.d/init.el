@@ -74,6 +74,25 @@
 (use-package org
   :custom
   org-directory mk-org-directory)
+
+
+;; Zettelkasten
+(use-package org-roam
+  :bind
+  (("C-c n r f" . org-roam-node-find)
+   ("C-c n r i" . org-roam-node-insert)
+   ("C-c n r t" . org-roam-tag-tag)
+   ("C-c n r T" . org-roam-tag-remove)
+   ("C-c n r r" . org-roam-ref-add)
+   ("C-c n r R" . org-roam-ref-remove)
+   ("C-c n r s" . org-roam-db-sync)
+   ("C-c n r b" . org-roam-buffer-toggle))
+  :custom (org-roam-directory (concat mk-org-directory "/roam")))
+
+(use-package citar)
+(use-package citar-org-roam)
+
+
 ;; Scala
 ;; Enable scala-mode and sbt-mode
 (use-package scala-mode
