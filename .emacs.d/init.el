@@ -175,9 +175,11 @@
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 
 (add-hook 'prog-mode-hook #'electric-pair-mode)
+
 ;; Backups
 (setq make-backup-files nil)
 
-
-
+;; Store custom values in own file
 (setq custom-file "~/.emacs.d/custom.el")
+
+(set-face-attribute 'default nil :font "Terminus" :height 130)
