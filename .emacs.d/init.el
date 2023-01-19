@@ -16,7 +16,7 @@
 
 (use-package consult
   :bind
-  (("C-c s" . #'consult-line)))
+  (("C-c s" . consult-line)))
 
 (use-package marginalia
   :init
@@ -56,7 +56,7 @@
    (tramp-remote-shell-args ("-c"))))
 
 (defun mk-yadm ()
-  "Open magit connected to yadm over tramp"
+  "Open magit connected to yadm over tramp."
   (interactive)
   (magit-status "/yadm::"))
 (global-set-key (kbd "C-c C-d d") #'mk-yadm)
@@ -118,9 +118,9 @@
 
 
 ;; Python
+;; Add eldoc mode hook for python mode
 (use-package python-mode
-  :hook
-  (python-mode . eldoc-mode)
+  :hook (python-mode . eldoc-mode)
   :custom (python-indent-guess-indent-offset-verbose nil))
 
 (use-package pyvenv
@@ -136,8 +136,7 @@
   (python-mode . poetry-tracking-mode))
 
 (use-package blacken
-  :hook
-  (python-mode))
+  :hook (python-mode))
 
 (use-package numpydoc
   :bind (:map python-mode-map
@@ -162,6 +161,7 @@
 
 ;; Look and feel
 (use-package all-the-icons)
+
 (use-package doom-modeline
   :init
   (doom-modeline-mode))
