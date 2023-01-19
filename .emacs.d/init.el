@@ -69,6 +69,16 @@
   (setq eglot-autoshutdown t))
 
 
+;; Scala
+;; Enable scala-mode and sbt-mode
+(use-package scala-mode
+  :interpreter ("scala" . scala-mode))
+
+;; Enable sbt mode for executing sbt commands
+(use-package sbt-mode
+  :commands sbt-start sbt-command)
+
+
 ;; Python
 (use-package python-mode
   :hook
