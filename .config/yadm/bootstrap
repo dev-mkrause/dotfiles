@@ -1,0 +1,11 @@
+#!/bin/bash
+
+cd "$HOME"
+
+# Doom Emacs
+DOOM_DIR=$HOME/.config/emacs
+if [ ! -d $DOOM_DIR ]; then
+    echo "Bootstrapping Doom Emacs..."
+    git clone --depth 1 --single-branch https://github.com/doomemacs/doomemacs ~/.config/emacs
+    sh ~/.config/emacs/bin/doom --force install
+fi
