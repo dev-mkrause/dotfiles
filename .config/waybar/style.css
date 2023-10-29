@@ -1,0 +1,61 @@
+* {
+    font-size: 16px;
+    font-family: Ubuntu, FontAwesome;
+    margin: 0.2px;
+}
+
+#custom-spacer {
+    padding-right: 20px;
+    padding-left: 20px;
+}
+
+window#waybar {
+    background: #000000;
+    color: #ffffff;
+}
+
+#workspaces button {
+    padding: 0 2px;
+    color: #ffffff;
+}
+
+#workspaces button.focused {
+    color: #70b900;
+}
+
+#clock {
+    color: #ffffff;
+}
+
+#pulseaudio {
+    color: #989898;
+}
+#memory {
+    color: #989898;
+}
+#cpu {
+    color: #989898;
+}
+#battery {
+    color: #989898;
+}
+
+#battery.warning {
+    color: #ff7f9f;
+}
+#battery.critical {
+    color: #ff5f5f;
+}
+
+#disk {
+    color: #989898;
+}
+
+#clock,
+#pulseaudio,
+#memory,
+#cpu,
+#battery,
+#disk {
+    padding: 0 10px;
+}

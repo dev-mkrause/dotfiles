@@ -1,0 +1,78 @@
+// -*- mode: json -*-
+
+{
+	"layer": "top",
+	"position": "top",
+
+	"modules-left": [
+		"sway/workspaces",
+		"custom/spacer",
+		"sway/window"
+	],
+	"modules-center": [
+		"clock"
+	],
+	"modules-right": [
+		"pulseaudio",
+		"memory",
+		"cpu",
+		"battery",
+		"disk",
+		"tray"
+	],
+
+	"custom/spacer": {
+		"format": "|",
+		"tooltip": false
+	},
+	"sway/workspaces": {
+		"disable-scroll": true,
+		"format": "{name}"
+	},
+
+	"sway/window": {
+		"max-length": 50,
+		"icon": true
+	},
+
+	"clock": {
+		"format": "{:%a   %d-%m-%Y  %R}",
+		"tooltip": false
+	},
+	"pulseaudio": {
+		"format": " {volume:2}%",
+		"format-bluetooth": " {volume}%",
+		"format-muted": "MUTE",
+		"format-icons": {
+			"headphones": "",
+		},
+		"scroll-step": 5,
+		"on-click": "pamixer -t",
+		"on-click-right": "pavucontrol"
+	},
+	"memory": {
+		"interval": 5,
+		"format": " {}%"
+	},
+	"cpu": {
+		"interval": 5,
+		"format": " {usage:2}%"
+	},
+	"battery": {
+        	"states": {
+            		"warning": 30,
+            		"critical": 15
+        	},
+        	"format": "{icon} {capacity}%",
+        	"format-charging": " {capacity}%",
+        	"format-icons": ["", "", "", ""]
+	},
+	"disk": {
+		"interval": 5,
+		"format": " {percentage_used:2}%",
+		"path": "/"
+	},
+	"tray": {
+		"icon-size": 20
+	}
+}
