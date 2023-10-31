@@ -108,6 +108,8 @@
   :bind
   ("C-c w e" . elfeed ))
 
+
+;; Emacs general settings
 (defvar --backup-directory (expand-file-name "backups" user-emacs-directory))
 (if (not (file-exists-p --backup-directory))
     (make-directory --backup-directory t))
@@ -131,6 +133,11 @@
 (setq use-short-answers t)
 
 (set-face-attribute 'default nil :font "Fira Code" :height 120)
+
+(setq vc-follow-symlinks t)
+
+(setq native-comp-async-report-warnings-errors 'silent)
+
 
 (defun open-user-init-file ()
   "Open users init file defined by 'user-init-file'."
