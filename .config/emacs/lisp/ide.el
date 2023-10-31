@@ -10,4 +10,7 @@
 (use-package flycheck
   :init (global-flycheck-mode))
 
+(use-package treemacs
+  :bind ("C-c o d" . treemacs-select-window))
+
 (provide 'ide)
