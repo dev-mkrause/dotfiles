@@ -128,8 +128,6 @@
 (recentf-mode)
 (global-set-key (kbd "C-c f r") #'recentf)
 
-(global-set-key (kbd "M-o") #'other-window)
-
 (setq use-short-answers t)
 
 (set-face-attribute 'default nil :font "Fira Code" :height 120)
@@ -153,6 +151,9 @@
 
 (use-package vterm
   :bind ("<f12>". vterm))
+
+(use-package ace-window
+  :bind ("M-o" . ace-window))
 
 (use-package org
   :bind
