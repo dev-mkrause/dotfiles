@@ -161,7 +161,7 @@
    ("C-c n c" . org-capture))
   :custom
   (org-directory "~/Dokumente/org")
-  (org-todo-keywords '((sequence "TODO(t)" "PROJECT(p)" "WAITING(w)"
+  (org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "PROJECT(p)" "WAITING(w)"
 				 "DELEGATED(l)" "SOMEDAY(s)" "|" "DONE(d)" "CANCELLED(c)")))
   (org-agenda-files '("~/Dokumente/org/agenda/agenda.org"))
   (org-log-into-drawer t)
