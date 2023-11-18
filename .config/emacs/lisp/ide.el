@@ -11,6 +11,7 @@
   :init (global-flycheck-mode))
 
 (use-package treemacs
+  :config (treemacs-project-follow-mode)
   :bind ("C-c o d" . treemacs-select-window))
 
 (provide 'ide)
