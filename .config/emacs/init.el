@@ -19,6 +19,9 @@
 ;; 	 doom-themes-enable-italic t)
 ;;   (load-theme 'doom-one t)
 ;;   (doom-themes-org-config))
+(use-package nix-mode
+  :mode "\\.nix\\'")
+
 (use-package envrc
   :bind ("C-c o e r" . envrc-reload)
   ("C-c o e a" . envrc-allow))
