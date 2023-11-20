@@ -115,3 +115,4 @@ if ! shopt -oq posix; then
 fi
 
 eval "$(direnv hook bash)"
+. "$HOME/.cargo/env"
