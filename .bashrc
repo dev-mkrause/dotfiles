@@ -114,6 +114,3 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# Setup asdf version manager
-. "$HOME/.asdf/asdf.sh"
-. "$HOME/.asdf/completions/asdf.bash"
