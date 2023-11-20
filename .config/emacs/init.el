@@ -19,6 +19,9 @@
 ;; 	 doom-themes-enable-italic t)
 ;;   (load-theme 'doom-one t)
 ;;   (doom-themes-org-config))
+(use-package envrc
+  :bind ("C-c o e r" . envrc-reload)
+  ("C-c o e a" . envrc-allow))
 (setq epg-pinentry-mode 'loopback)
 
 (setenv "GPG_AGENT_INFO" nil)
