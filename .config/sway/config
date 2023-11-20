@@ -24,6 +24,9 @@ set $menu wofi -i --show drun
 # Default wallpaper (more resolutions are available in /gnu/store/4y6wa56m5sw47j33fn8gw0l5jbfpzd3n-sway-1.8.1/share/backgrounds/sway/)
 output * background ~/.config/wallpaper/deer-stars.jpg fill
 
+# Automount Disks using udiskie
+exec udiskie --tray
+
 #
 # Example configuration:
 #
