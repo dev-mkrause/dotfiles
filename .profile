@@ -28,3 +28,5 @@ fi
 
 # Necessary for GPG to work correctly with wayland
 export GPG_TTY=$(tty)
+
+. "$HOME/.cargo/env"
