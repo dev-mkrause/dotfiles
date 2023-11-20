@@ -29,6 +29,18 @@
 (use-package envrc
   :bind ("C-c o e r" . envrc-reload)
   ("C-c o e a" . envrc-allow))
+
+(use-package hledger-mode
+  :bind
+  (("C-c n l j" . hledger-run-command)
+   (:map hledger-mode-map
+	 (("C-c n l e" . hledger-jentry))))
+
+  :custom
+  (hledger-jfile "~/Dokumente/hledger/2023.journal")
+  (hledger-currency-string "EUR")
+  :mode ("\\.journal\\'" "\\.hledger\\'"))
+
 (setq epg-pinentry-mode 'loopback)
 
 (setenv "GPG_AGENT_INFO" nil)
