@@ -19,6 +19,9 @@
 ;; 	 doom-themes-enable-italic t)
 ;;   (load-theme 'doom-one t)
 ;;   (doom-themes-org-config))
+(setq epg-pinentry-mode 'loopback)
+
+(setenv "GPG_AGENT_INFO" nil)
 
 (use-package modus-themes
   :config (load-theme 'modus-vivendi-tinted t))
