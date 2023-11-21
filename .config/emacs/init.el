@@ -39,6 +39,20 @@
 
 (setenv "GPG_AGENT_INFO" nil)
 
+(use-package project
+  :config
+  (defun project-magit-dir ()
+  "Run Magit in the current project's root."
+  (interactive)
+  (magit-status (project-root (project-current t))))
+
+  :custom
+  (project-switch-commands '((project-find-file "Find file")
+			     (project-find-regexp "Find regexp")
+			     (project-find-dir "Find directory")
+			     (project-magit-dir "Magit" "v")
+			     (project-eshell "Eshell"))))
+
 (use-package modus-themes
   :config (load-theme 'modus-vivendi-tinted t))
 
