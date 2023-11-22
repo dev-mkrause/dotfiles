@@ -14,19 +14,26 @@
   # want to update the value, then make sure to first check the Home Manager
   # release notes.
   home.stateVersion = "23.05"; # Please read the comment before changing.
-
+  targets.genericLinux.enable = true;
   # The home.packages option allows you to install Nix packages into your
   # environment.
-  home.packages = [
-    # # Adds the 'hello' command to your environment. It prints a friendly
-    # # "Hello, world!" when run.
-    # pkgs.hello
+  home.packages = with pkgs; [
+    hledger
+    ripgrep
+    git
 
-    # # It is sometimes useful to fine-tune packages, for example, by applying
-    # # overrides. You can do that directly here, just don't forget the
-    # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
-    # # fonts?
-    # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
+    clojure
+    cargo
+
+    signal-desktop
+    discord
+    brave
+    spotify
+
+    # Sway Packages
+    brightnessctl
+
+    (pkgs.nerdfonts.override { fonts = [ "FiraCode" ]; })
 
     # # You can also create simple shell scripts directly inside your
     # # configuration. For example, this adds a command 'my-hello' to your
@@ -63,9 +70,47 @@
   #  /etc/profiles/per-user/mkrause/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    # EDITOR = "emacs";
+#    EDITOR = "emacsclient -c -a emacs";
   };
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+
+  programs.bash = {
+    enable = true;
+  };
+
+  programs.nushell = {
+    enable = true;
+  };
+
+  programs.direnv.enable = true;
+  programs.direnv.enableBashIntegration = true;
+  programs.direnv.enableNushellIntegration = true;
+
+  programs.wofi.enable = true;
+
+  programs.foot = {
+    enable = true;
+
+    settings = {
+      main = {
+        term = "xterm-256color";
+
+        font = "Fira Code:size=9";
+        dpi-aware = "yes";
+      };
+
+      mouse = {
+        hide-when-typing = "yes";
+      };
+    };
+  };
+
+  programs.emacs.enable = true;
+  services.emacs = {
+    enable = true;
+    defaultEditor = true;
+    package = pkgs.emacs29;
+  };
 }
