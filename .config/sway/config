@@ -17,7 +17,7 @@ set $right l
 # Your preferred terminal emulator
 set $term alacritty
 
-set $menu wofi -i --show drun
+set $menu rofi -show-icons -show drun 
 
 set $editor emacsclient -c -a emacs
 
