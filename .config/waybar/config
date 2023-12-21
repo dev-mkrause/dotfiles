@@ -75,7 +75,7 @@
 	},
 
 	"pulseaudio": {
-		"format": "{icon} {volume:2}%",
+		"format": "Vol: {volume:2}%",
 		"format-bluetooth": "{icon}  {volume}%",
 		"format-muted": "MUTE",
 		"format-icons": {
@@ -91,11 +91,11 @@
 	},
 	"memory": {
 		"interval": 5,
-		"format": "Mem {}%"
+		"format": "Mem: {}%"
 	},
 	"cpu": {
 		"interval": 5,
-		"format": "CPU {usage:2}%"
+		"format": "CPU: {usage:2}%"
 	},
 	"battery": {
 		"states": {
@@ -103,7 +103,7 @@
 			"warning": 30,
 			"critical": 15
 		},
-		"format": "{icon} {capacity}%",
+		"format": "Bat: {capacity}%",
 		"format-icons": [
 			"",
 			"",
@@ -114,7 +114,7 @@
 	},
 	"disk": {
 		"interval": 5,
-		"format": "Disk {percentage_used:2}%",
+		"format": "Disk: {percentage_used:2}%",
 		"path": "/"
 	},
 	"tray": {
