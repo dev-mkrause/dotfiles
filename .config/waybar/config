@@ -6,7 +6,8 @@
 
 	"modules-left": [
 		"sway/workspaces",
-		"custom/right-arrow-dark"
+		"custom/left-arrow-light",
+		"sway/window"
 	],
 	"modules-center": [
 		"custom/left-arrow-dark",
@@ -59,6 +60,11 @@
 	"sway/workspaces": {
 		"disable-scroll": true,
 		"format": "{name}"
+	},
+
+	"sway/window": {
+		"max-length": 50,
+		"icon": true
 	},
 
 	"clock#1": {

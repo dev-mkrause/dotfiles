@@ -242,6 +242,12 @@ bindsym Escape mode "default"
 }
 bindsym $mod+r mode "resize"
 
+default_border pixel 1 px
+default_floating_border none
+font Fira Code 0
+titlebar_padding 1
+titlebar_border_thickness 0
+
 #
 # Status Bar:
 #
