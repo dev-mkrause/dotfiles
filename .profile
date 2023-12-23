@@ -30,3 +30,5 @@ fi
 export GPG_TTY=$(tty)
 
 . "$HOME/.cargo/env"
+
+export XDG_CURRENT_DESKTOP="sway"
