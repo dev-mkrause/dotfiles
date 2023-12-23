@@ -34,6 +34,7 @@
          ("C-c n d c a" . citar-denote-add-citekey)
          ("C-c n d c x" . citar-denote-remove-citekey))
   :custom
+  (citar-bibliography org-cite-global-bibliography)
   (org-cite-insert-processor 'citar)
   (org-cite-follow-processor 'citar)
   (org-cite-activate-processor 'citar))
@@ -69,5 +70,7 @@
   :mode ("\\.epub\\'" . nov-mode)
   :config
   (setq nov-save-place-file (concat doom-cache-dir "nov-places")))
+
+(use-package pdf-tools)
 
 (provide 'zettelkasten)
