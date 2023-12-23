@@ -23,6 +23,8 @@ set $editor emacsclient -c -a emacs
 
 set $browser brave-browser
 
+set $screenshot flameshot gui
+
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /gnu/store/4y6wa56m5sw47j33fn8gw0l5jbfpzd3n-sway-1.8.1/share/backgrounds/sway/)
@@ -87,6 +89,8 @@ bindsym $mod+p exec $editor
 
 # Start Browser
 bindsym $mod+o exec $browser
+
+bindsym $mod+shift+i exec $screenshot
 
 # Kill focused window
 bindsym $mod+Shift+q kill
