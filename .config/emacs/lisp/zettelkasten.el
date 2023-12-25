@@ -27,6 +27,7 @@
      ("file" "Link to document file." ":")))
   (bibtex-align-at-equal-sign t))
 
+
 (use-package citar
   :bind (("C-c n d c c" . citar-create-note)
          ("C-c n d c o" . citar-denote-open-note)
@@ -39,9 +40,11 @@
   (org-cite-follow-processor 'citar)
   (org-cite-activate-processor 'citar))
 
+
 (use-package citar-denote
   :custom (citar-open-always-create-notes t)
   :config (citar-denote-mode))
+
 
 (setq bibtex-completion-bibliography '("~/Dokumente/zettelkasten/library/library.bib"))
 ;;(setq bibtex-completion-notes-path "~/Dokumente/zettelkasten/library/")
@@ -52,12 +55,15 @@
 (setq org-cite-global-bibliography '("~/Dokumente/zettelkasten/library/library.bib"))
 (setq citar-bibliography org-cite-global-bibliography)
 
+
 ;; Multiple LaTeX passes for bibliographies
 (setq org-latex-pdf-process
       '("pdflatex -interaction nonstopmode -output-directory %o %f"
 	"bibtex %b"
 	"pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
 	"pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+
+
 ;; Clean temporary files after export
 (setq org-latex-logfiles-extensions
       (quote ("lof" "lot" "tex~" "aux" "idx" "log" "out"
@@ -72,5 +78,23 @@
   (setq nov-save-place-file (concat doom-cache-dir "nov-places")))
 
 (use-package pdf-tools)
+
+
+;;;;;;;;;;;;;
+;; Reading ;;
+;;;;;;;;;;;;;
+(use-package elfeed-org
+  :config
+  (elfeed-org)
+  :custom
+  (rmh-elfeed-org-files '("~/Dokumente/org/elfeed.org")))
+
+(use-package elfeed
+  :custom
+  (elfeed-db-directory
+   (expand-file-name "elfeed" user-emacs-directory))
+  (elfeed-show-entry-switch 'display-buffer)
+  :bind
+  ("C-c w e" . elfeed ))
 
 (provide 'zettelkasten)

@@ -1,208 +1,78 @@
 (require 'package)
 (require 'use-package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+
+;; Also read: <https://protesilaos.com/codelog/2022-05-13-emacs-elpa-devel/>
+(setq package-archives
+      '(("gnu-elpa" . "https://elpa.gnu.org/packages/")
+        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+        ("melpa" . "https://melpa.org/packages/")))
+
+;; Highest number gets priority (what is not mentioned has priority 0)
+(setq package-archive-priorities
+      '(("gnu-elpa" . 3)
+        ("melpa" . 2)
+        ("nongnu" . 1)))
 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
 (setq use-package-always-ensure t)
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
-(require 'clojure)
+
+
+(require 'mk-essentials)
+(require 'mk-keymaps)
+(mk-emacs-keybind global-map
+  "<insert>" nil
+  "C-x C-z" nil
+  "C-x C-c" nil
+  "<f2>" nil
+  "M-SPC" nil
+  "C-x C-c C-c" #'save-buffers-kill-emacs
+  "C-z" mk-prefix-map
+  "<f2>" mk-prefix-map
+  "M-SPC" mk-prefix-map
+  "M-o" #'delete-blank-lines)
+
+(require 'mk-organization)
+(require 'mk-ide)
+(require 'mk-latex)
 (require 'zettelkasten)
-(require 'org-gtd)
-(require 'ide)
-(require 'presentation)
 
-(use-package rustic
-  :custom
-  (rustic-lsp-client 'eglot))
 
-(use-package nix-mode
-  :mode "\\.nix\\'")
+;;;;;;;;;;;;;;;;;;;;
+;; Spell checking ;;
+;;;;;;;;;;;;;;;;;;;;
+(use-package jinx
+  :config
+  (setq jinx-languages "en_US de_DE")
+  
+  (require 'vertico-multiform)
 
-(use-package envrc
-  :bind ("C-c o e r" . envrc-reload)
-  ("C-c o e a" . envrc-allow))
+  (add-to-list 'vertico-multiform-categories
+               '(jinx grid (vertico-grid-annotate . 20)))
+  (vertico-multiform-mode 1)
 
-(use-package hledger-mode
-  :bind
-  (("C-c n l j" . hledger-run-command)
-   (:map hledger-mode-map
-	 (("C-c n l e" . hledger-jentry))))
+  :hook (emacs-startup . global-jinx-mode)
+  :bind (("M-$" . jinx-correct)
+         ("C-M-$" . jinx-languages)))
 
-  :custom
-  (hledger-jfile "~/Dokumente/hledger/2023.journal")
-  (hledger-currency-string "EUR")
-  :mode ("\\.journal\\'" "\\.hledger\\'"))
 
+;;;;;;;;;;;
+;; Icons ;;
+;;;;;;;;;;;
+(use-package nerd-icons)
+(use-package nerd-icons-dired
+  :hook (dired-mode . nerd-icons-dired-mode))
+
+(use-package treemacs-nerd-icons
+  :config
+  (treemacs-load-theme "nerd-icons"))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;
+;; Encryption and GPG ;;
+;;;;;;;;;;;;;;;;;;;;;;;;
 (setq epg-pinentry-mode 'loopback)
 
 (setenv "GPG_AGENT_INFO" nil)
-
-(use-package project
-  :config
-  (defun project-magit-dir ()
-  "Run Magit in the current project's root."
-  (interactive)
-  (magit-status (project-root (project-current t))))
-
-  :custom
-  (project-switch-commands '((project-find-file "Find file")
-			     (project-find-regexp "Find regexp")
-			     (project-find-dir "Find directory")
-			     (project-magit-dir "Magit" "v")
-			     (project-eshell "Eshell"))))
-
-(use-package modus-themes
-  :config (load-theme 'modus-vivendi-tinted t))
-
-(use-package doom-modeline
-  :config (doom-modeline-mode))
-
-(use-package restart-emacs
-  :bind ("C-h u r" . restart-emacs))
-
-(use-package vertico
-  :custom (vertico-cycle t)
-
-  :config (vertico-mode)
-  (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
-  (add-hook 'minibuffer-setup-hook #'vertico-repeat-save))
-
-(use-package consult
-  :bind (("C-s" . consult-line)
-
-	 :map minibuffer-local-map
-	 ("C-r" . consult-history)))
-
-
-(use-package marginalia
-  :custom (marginalia-annotators '(marginalia-annotators-heavy
-				   marginalia-annotators-light))
-  :config (marginalia-mode))
-
-(use-package orderless
-  :custom
-  (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles basic partial-completion)))))
-
-(use-package embark
-  :config
-  (with-eval-after-load 'embark-consult
-    (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))
-
-  (setq prefix-help-command #'embark-prefix-help-command)
-  (keymap-global-set "<remap> <describe-bindings>" #'embark-bindings)
-  :bind (("C-." . embark-act)))
-
-(use-package embark-consult)
-
-(use-package corfu
-  :custom
-  (corfu cycle t)
-  (corfu-auto t)
-  (corfu-auto-prefix 1)
-
-  :config
-  (corfu-popupinfo-mode)
-  (eldoc-add-command #'corfu-insert)
-
-  :bind (:map corfu-map
-	      ("M-p" . corfu-popupinfo-scroll-down)
-	      ("M-n" . corfu-popupinfo-scroll-up)
-	      ("M-d" . corfu-popupinfo-toggle))
-  :init (global-corfu-mode))
-
-(use-package cape
-  :config
-  ;; Add useful defaults completion sources from cape
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-
-  ;; Silence the pcomplete capf, no errors or messages!
-  ;; Important for corfu
-  (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-silent)
-
-  ;; Ensure that pcomplete does not write to the buffer
-  ;; and behaves as a pure `completion-at-point-function'.
-  (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify))
-
-(use-package elfeed-org
-  :config
-  (elfeed-org)
-  :custom
-  (rmh-elfeed-org-files '("~/Dokumente/org/elfeed.org")))
-
-(use-package elfeed
-  :custom
-  (elfeed-db-directory
-   (expand-file-name "elfeed" user-emacs-directory))
-  (elfeed-show-entry-switch 'display-buffer)
-  :bind
-  ("C-c w e" . elfeed ))
-
-
-;; Emacs general settings
-(defvar --backup-directory (expand-file-name "backups" user-emacs-directory))
-(if (not (file-exists-p --backup-directory))
-    (make-directory --backup-directory t))
-(setq backup-directory-alist `(("." . ,--backup-directory)))
-(setq make-backup-files t               ; backup of a file the first time it is saved.
-      backup-by-copying t               ; don't clobber symlinks
-      version-control t                 ; version numbers for backup files
-      delete-old-versions t             ; delete excess backup files silently
-      delete-by-moving-to-trash t
-      kept-old-versions 6               ; oldest versions to keep when a new numbered backup is made (default: 2)
-      kept-new-versions 9               ; newest versions to keep when a new numbered backup is made (default: 2)
-      auto-save-default t               ; auto-save every buffer that visits a file
-      auto-save-timeout 20              ; number of seconds idle time before auto-save (default: 30)
-      )
-
-(recentf-mode)
-(global-set-key (kbd "C-c f r") #'recentf)
-
-(setq use-short-answers t)
-
-(set-face-attribute 'default nil :font "Fira Code" :height 120)
-
-(setq vc-follow-symlinks t)
-
-(setq native-comp-async-report-warnings-errors 'silent)
-
-
-(defun open-user-init-file ()
-  "Open users init file defined by 'user-init-file'."
-  (interactive)
-  (find-file user-init-file))
-(global-set-key (kbd "C-h u c") #'open-user-init-file)
-
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
-
-(use-package paredit
-  :hook ((clojure-mode emacs-lisp-mode) . paredit-mode))
-
-(use-package vterm
-  :bind ("<f12>". vterm))
-
-(use-package ace-window
-  :bind ("M-o" . ace-window))
-
-(use-package org
-  :bind
-  (("C-c n a" . org-agenda)
-   ("C-c n c" . org-capture))
-  :custom
-  (org-directory "~/Dokumente/org")
-  (org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "PROJECT(p)" "WAITING(w)"
-				 "DELEGATED(l)" "SOMEDAY(s)" "|" "DONE(d)" "CANCELLED(c)")))
-  (org-agenda-files '("~/Dokumente/org/agenda/agenda.org"))
-  (org-log-into-drawer t)
-  (org-export-with-drawers nil)
-  (org-export-with-todo-keywords nil)
-  (org-export-with-broken-links t)
-  (org-export-with-toc nil))
-
-(setq org-capture-templates
-      '(("i" "Inbox" entry (file "~/Dokumente/org/agenda/inbox.org")
-         "* %?\n  %i\n")))
