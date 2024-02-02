@@ -112,49 +112,47 @@ Also see `mk-emacs-configure'."
       auto-save-timeout 20              ; number of seconds idle time before auto-save (default: 30)
       )
 
-(use-package modus-themes
-  :config
-  ;; Add all your customizations prior to loading the themes
-  (setq modus-themes-italic-constructs t
-        modus-themes-bold-constructs nil)
+(setq modus-themes-italic-constructs t
+      modus-themes-bold-constructs t)
 
-  ;; Maybe define some palette overrides, such as by using our presets
-  (setq modus-themes-common-palette-overrides
-        modus-themes-preset-overrides-intense)
+(setq modus-themes-completions
+      '((matches . (extrabold underline))
+        (selection . (semibold italic))))
 
-  (setq modus-themes-completions
-	'((matches . (extrabold underline))
-          (selection . (semibold italic))))
+(setq modus-themes-org-blocks 'gray-background)
 
-  (setq modus-themes-org-blocks 'gray-background)
+(setq modus-themes-headings
+      '((1 . (variable-pitch 1.5))
+        (2 . (1.3))
+        (agenda-date . (1.3))
+        (agenda-structure . (variable-pitch light 1.8))
+        (t . (1.1))))
 
-  (setq modus-themes-headings
-	'((1 . (variable-pitch 1.5))
-          (2 . (1.3))
-          (agenda-date . (1.3))
-          (agenda-structure . (variable-pitch light 1.8))
-          (t . (1.1))))
+(load-theme 'modus-vivendi :no-confirm)
 
-  (setq modus-themes-common-palette-overrides
-	'((border-mode-line-active unspecified)
-          (border-mode-line-inactive unspecified)))
+(define-key global-map (kbd "<f5>") #'modus-themes-toggle)
 
-  ;; Load the theme of your choice.
-  (load-theme 'modus-vivendi t)
+(setq-default org-startup-indented t
+              org-pretty-entities t
+              org-hide-emphasis-markers t
+              org-startup-with-inline-images t
+              org-image-actual-width '(300))
 
-  (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
+(use-package org-modern
+  :hook
+  (org-mode . global-org-modern-mode)
+  :custom
+  (org-modern-keyword nil)
+  (org-modern-checkbox nil)
+  (org-modern-table nil))
 
+(use-package org-appear
+  :hook
+  (org-mode . org-appear-mode))
 
 (use-package pulsar
   :config
   (pulsar-global-mode))
-
-(use-package spacious-padding
-  :custom
-  (spacious-padding-subtle-mode-line t)
-
-  :config (spacious-padding-mode))
-
 
 (use-package doom-modeline
   :config (doom-modeline-mode))
