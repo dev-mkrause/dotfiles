@@ -6,57 +6,25 @@
 
 	"modules-left": [
 		"sway/workspaces",
-		"custom/left-arrow-light",
+		"custom/spacer",
 		"sway/window"
 	],
 	"modules-center": [
-		"custom/left-arrow-dark",
-		"clock#1",
-		"custom/left-arrow-light",
-		"custom/left-arrow-dark",
-		"clock#2",
-		"custom/right-arrow-dark",
-		"custom/right-arrow-light",
-		"clock#3",
-		"custom/right-arrow-dark"
+		"clock"
 	],
 	"modules-right": [
-		"custom/left-arrow-dark",
 		"pulseaudio",
-		"custom/left-arrow-light",
-		"custom/left-arrow-dark",
 		"memory",
-		"custom/left-arrow-light",
-		"custom/left-arrow-dark",
 		"cpu",
-		"custom/left-arrow-light",
-		"custom/left-arrow-dark",
 		"battery",
-		"custom/left-arrow-light",
-		"custom/left-arrow-dark",
 		"disk",
-		"custom/left-arrow-light",
-		"custom/left-arrow-dark",
 		"tray"
 	],
 
-	"custom/left-arrow-dark": {
-		"format": "",
+	"custom/spacer": {
+		"format": "|",
 		"tooltip": false
 	},
-	"custom/left-arrow-light": {
-		"format": "",
-		"tooltip": false
-	},
-	"custom/right-arrow-dark": {
-		"format": "",
-		"tooltip": false
-	},
-	"custom/right-arrow-light": {
-		"format": "",
-		"tooltip": false
-	},
-
 	"sway/workspaces": {
 		"disable-scroll": true,
 		"format": "{name}"
@@ -67,29 +35,16 @@
 		"icon": true
 	},
 
-	"clock#1": {
-		"format": "{:%a}",
+	"clock": {
+		"format": "{:%a   %d-%m-%Y  %R}",
 		"tooltip": false
 	},
-	"clock#2": {
-		"format": "{:%H:%M}",
-		"tooltip": false
-	},
-	"clock#3": {
-		"format": "{:%d-%m-%Y}",
-		"tooltip": false
-	},
-
 	"pulseaudio": {
-		"format": "Vol: {volume:2}%",
-		"format-bluetooth": "{icon}  {volume}%",
+		"format": " {volume:2}%",
+		"format-bluetooth": " {volume}%",
 		"format-muted": "MUTE",
 		"format-icons": {
 			"headphones": "",
-			"default": [
-				"",
-				""
-			]
 		},
 		"scroll-step": 5,
 		"on-click": "pamixer -t",
@@ -97,30 +52,25 @@
 	},
 	"memory": {
 		"interval": 5,
-		"format": "Mem: {}%"
+		"format": " {}%"
 	},
 	"cpu": {
 		"interval": 5,
-		"format": "CPU: {usage:2}%"
+		"format": " {usage:2}%"
 	},
 	"battery": {
-		"states": {
-			"good": 95,
-			"warning": 30,
-			"critical": 15
-		},
-		"format": "Bat: {capacity}%",
-		"format-icons": [
-			"",
-			"",
-			"",
-			"",
-			""
-		]
+        	"states": {
+            		"warning": 30,
+            		"critical": 15
+        	},
+        	"format": "{icon} {capacity}%",
+        	"format-charging": " {capacity}%",
+        	"format-full": " {capacity}%",
+        	"format-icons": ["", "", "", ""]
 	},
 	"disk": {
 		"interval": 5,
-		"format": "Disk: {percentage_used:2}%",
+		"format": " {percentage_used:2}%",
 		"path": "/"
 	},
 	"tray": {
