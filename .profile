@@ -29,6 +29,8 @@ fi
 # Necessary for GPG to work correctly with wayland
 export GPG_TTY=$(tty)
 
+eval $(gpg-agent --daemon)
+
 . "$HOME/.cargo/env"
 
 export XDG_CURRENT_DESKTOP="sway"
