@@ -232,26 +232,13 @@ bindsym Escape mode "default"
 }
 bindsym $mod+r mode "resize"
 
-default_border pixel 1 px
+default_border pixel 4 px
+gaps inner 3
 default_floating_border none
-font Fira Code 0
+font Iosevka Nerd Font 10
 titlebar_padding 1
-titlebar_border_thickness 0
+titlebar_border_thickness 1
 
-#
-# Status Bar:
-#
-# Read `man 5 sway-bar` for more information about this section.
 bar {
-#    position top
-
-# When the status_command prints a new line to stdout, swaybar updates.
-# The default just shows the current date and time.
-swaybar_command waybar
-
-# colors {
-#     statusline #ffffff
-#     background #323232
-#     inactive_workspace #32323200 #32323200 #5c5c5c
-# }
+    swaybar_command waybar
 }
