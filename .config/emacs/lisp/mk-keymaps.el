@@ -91,4 +91,15 @@
     "p" `("Project" . ,project-prefix-map)
     "f" `("Files" . ,mk-prefix-file-map)))
 
+(mk-emacs-keybind global-map
+  "<insert>" nil
+  "C-x C-z" nil
+  "C-x C-c" nil
+  "<f2>" nil
+  "M-SPC" nil
+  "C-x C-c C-c" #'save-buffers-kill-emacs
+  "<f2>" mk-prefix-map
+  "M-SPC" mk-prefix-map
+  "M-o" #'delete-blank-lines)
+
 (provide 'mk-keymaps)

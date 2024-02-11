@@ -19,26 +19,47 @@
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
-
 (require 'mk-essentials)
 (require 'mk-keymaps)
-(mk-emacs-keybind global-map
-  "<insert>" nil
-  "C-x C-z" nil
-  "C-x C-c" nil
-  "<f2>" nil
-  "M-SPC" nil
-  "C-x C-c C-c" #'save-buffers-kill-emacs
-  "C-z" mk-prefix-map
-  "<f2>" mk-prefix-map
-  "M-SPC" mk-prefix-map
-  "M-o" #'delete-blank-lines)
-
 (require 'mk-organization)
 (require 'mk-ide)
 (require 'mk-latex)
-(require 'zettelkasten)
+(require 'mk-zettelkasten)
 
+(mk-emacs-package-install 'beancount "https://github.com/beancount/beancount-mode")
+
+(add-to-list 'auto-mode-alist '("\\.beancount\\'" . beancount-mode))
+(add-hook 'beancount-mode-hook #'flymake-bean-check-enable)
+
+(use-package csv-mode)
+
+(use-package blacken)
+(use-package eglot)
+(use-package numpydoc)
+(use-package pyvenv)
+
+;; Hooks
+(add-hook 'python-mode-hook #'blacken-mode)
+(add-hook 'python-mode-hook #'eldoc-mode)
+(add-hook 'python-mode-hook #'eglot-ensure)
+(add-hook 'python-mode-hook #'pyvenv-mode)
+(add-hook 'python-mode-hook #'pyvenv-tracking-mode)
+
+
+;;; pyvenv
+;; restart python when the virtual environment changes
+(add-hook 'pyvenv-post-activate-hooks #'pyvenv-restart-python)
+
+;; default to the commonly used "venv" folder for the virtual
+;; environment
+(customize-set-variable 'pyvenv-default-virtual-env-name "venv")
+
+;;; python mode
+(customize-set-variable 'python-indent-guess-indent-offset-verbose nil)
+
+;;; numpydoc
+(customize-set-variable 'numpydoc-insert-examples-block nil)
+(customize-set-variable 'numpydoc-template-long nil)
 
 ;;;;;;;;;;;;;;;;;;;;
 ;; Spell checking ;;
@@ -74,5 +95,5 @@
 ;; Encryption and GPG ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
 (setq epg-pinentry-mode 'loopback)
-
 (setenv "GPG_AGENT_INFO" nil)
+(put 'narrow-to-region 'disabled nil)

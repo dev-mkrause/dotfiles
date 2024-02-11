@@ -124,8 +124,8 @@ Also see `mk-emacs-configure'."
 (setq modus-themes-headings
       '((1 . (variable-pitch 1.5))
         (2 . (1.3))
-        (agenda-date . (1.3))
-        (agenda-structure . (variable-pitch light 1.8))
+        ;; (agenda-date . (1.0))
+        ;; (agenda-structure . (variable-pitch light 1.1))
         (t . (1.1))))
 
 (load-theme 'modus-vivendi :no-confirm)
@@ -197,7 +197,6 @@ Also see `mk-emacs-configure'."
 	 :map minibuffer-local-map
 	 ("C-r" . consult-history)))
 
-
 (use-package marginalia
   :custom (marginalia-annotators '(marginalia-annotators-heavy
 				   marginalia-annotators-light))
@@ -265,7 +264,10 @@ Also see `mk-emacs-configure'."
 
 (setq use-short-answers t)
 
-(set-face-attribute 'default nil :font "Fira Code" :height 120)
+(set-face-attribute 'default nil :font "Iosevka Nerd Font Mono" :height 120)
+(add-to-list 'default-frame-alist
+             '(font . "Iosevka Nerd Font Mono-14"))
+
 
 (setq vc-follow-symlinks t)
 

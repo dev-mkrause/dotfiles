@@ -2,8 +2,12 @@
   :init (global-flycheck-mode))
 
 (use-package treemacs
-  :config (treemacs-project-follow-mode)
+  :config (treemacs-follow-mode -1)
   :bind ("C-c o d" . treemacs-select-window))
+
+(setq treemacs-follow-after-init t
+      treemacs-is-never-other-window t
+      treemacs-sorting 'alphabetic-case-insensitive-asc)
 
 (use-package magit
   :bind ("C-x g" . magit))
@@ -11,9 +15,9 @@
 (use-package eglot
   :custom (eglot-autoshutdown t))
 
-(use-package treesit-auto
-  :config
-  (global-treesit-auto-mode))
+;; (use-package treesit-auto
+;;   :config
+;;   (global-treesit-auto-mode))
 
 (use-package aggressive-indent
   :hook (prog-mode))
