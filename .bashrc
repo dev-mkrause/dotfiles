@@ -116,3 +116,5 @@ fi
 
 eval "$(direnv hook bash)"
 . "$HOME/.cargo/env"
+
+[ -f "/home/mkrause/.ghcup/env" ] && . "/home/mkrause/.ghcup/env" # ghcup-env
