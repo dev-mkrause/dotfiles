@@ -4,14 +4,22 @@
   (add-to-list 'org-modules 'org-depend)
   (add-to-list 'org-modules 'org-habit))
 
+(defun mk-classify-entry ()
+  "Classify entry at point."
+  (interactive)
+  (org-todo)
+  (org-set-effort)
+  (org-set-tags-command)
+  (org-refile))
 
 (use-package org
   :bind
   (("C-c n a" . org-agenda)
-   ("C-c n c" . org-capture))
+   ("C-c n c" . org-capture)
+   ("C-c n w" . mk-classify-entry))
   :custom
   (org-directory "~/Dokumente/org")
-  (org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "PROJECT(p)" "WAITING(@w)" "|" "DONE(d)" "CANCELLED(@c)")))
+  (org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "PROJECT(p)" "WAITING(@w!)" "|" "DONE(@d)" "CANCELLED(@c)")))
   (org-log-into-drawer t)
   (org-export-with-drawers nil)
   (org-export-with-todo-keywords nil)
@@ -33,7 +41,11 @@
                   "<%<%Y-%m-%d %a %H:00>>"))
         ("n" "Note" entry  (file "agenda/notes.org")
          ,(concat "* Note (%a)\n"
-                  "/Entered on/ %U\n" "\n" "%?"))))
+                  "/Entered on/ %U\n" "\n" "%?"))
+	("f" "Zettelkasten Fleeting" entry  (file "~/Dokumente/zettelkasten/fleeting.org")
+         ,(concat "* %^{Zusammenfassung}\n"
+		  "%?\n"
+		  "- Quelle: %\n" "- Seite: %^{Seite}"))))
 
 (defun org-capture-inbox ()
   (interactive)
@@ -62,40 +74,46 @@
 
 ;; Agenda
 (setq org-agenda-custom-commands
-      '(("g" "Get Things Done (GTD)"
-         ((agenda ""
-                  ((org-agenda-skip-function
-                    '(org-agenda-skip-entry-if 'deadline))
-                   (org-deadline-warning-days 0)))
-          (todo "NEXT"
-                ((org-agenda-skip-function
-                  '(org-agenda-skip-entry-if 'deadline))
-                 (org-agenda-prefix-format "  %i %-12:c [%e] ")
-                 (org-agenda-overriding-header "\nTasks\n")))
+      '(("g" "GTD"
+	 ((agenda ""
+		  ((org-agenda-skip-function
+		    '(org-agenda-skip-entry-if 'deadline))
+		   (org-scheduled-past-days 0)
+		   (org-deadline-warning-days 0)))
+	  (todo "NEXT"
+		((org-agenda-skip-function
+		  '(org-agenda-skip-entry-if 'deadline))
+		 (org-agenda-prefix-format "  %i %-12:c [%e] ")
+		 (org-agenda-overriding-header "\nTasks\n")))
 	  (todo "WAITING"
 		((org-agenda-skip-function
-                  '(org-agenda-skip-entry-if 'deadline))
-                 (org-agenda-prefix-format "  %i %-12:c [%e] ")
-                 (org-agenda-overriding-header "\nWarten auf...\n")))
-          (agenda nil
-                  ((org-agenda-entry-types '(:deadline))
-                   (org-agenda-format-date "")
-                   (org-deadline-warning-days 7)
-                   (org-agenda-skip-function
-                    '(org-agenda-skip-entry-if 'notregexp "\\* NEXT"))
-                   (org-agenda-overriding-header "\nDeadlines")))
-          (tags-todo "inbox"
-                     ((org-agenda-prefix-format "  %?-12t% s")
-                      (org-agenda-overriding-header "\nInbox\n")))
-          (tags "CLOSED>=\"<today>\""
-                ((org-agenda-overriding-header "\nCompleted today\n")))))))
+		  '(org-agenda-skip-entry-if 'deadline))
+		 (org-agenda-prefix-format "  %i %-12:c [%e] ")
+		 (org-agenda-overriding-header "\nWarten auf...\n")))
+	  (agenda nil
+		  ((org-agenda-entry-types '(:deadline))
+		   (org-agenda-format-date "")
+		   (org-agenda-span 1)
+		   (org-deadline-warning-days 7)
+		   (org-agenda-overriding-header "\nDeadlines")))
+	  (agenda "" ((org-agenda-overriding-header "Overdue")
+		      (org-agenda-time-grid nil)
+		      (org-agenda-start-on-weekday nil)
+		      (org-agenda-show-all-dates nil)
+		      (org-agenda-format-date "")  ;; Skip the date
+		      (org-agenda-span 1)
+		      (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+		      (org-agenda-entry-types '(:deadline :scheduled))
+		      (org-scheduled-past-days 999)
+		      (org-deadline-past-days 999)
+		      (org-deadline-warning-days 0)))
+	  (tags-todo "inbox"
+		     ((org-agenda-prefix-format "  %?-12t% s")
+		      (org-agenda-overriding-header "\nInbox\n")))
+	  (tags "CLOSED>=\"<today>\""
+		((org-agenda-overriding-header "\nCompleted today\n")))))))
 
-(defun mk-classify-entry ()
-  (interactive)
-  (org-todo)
-  (org-set-effort)
-  (org-set-tags-command)
-  (org-refile))
+(add-hook 'org-agenda-finalize-hook #'org-agenda-find-same-or-today-or-agenda 7)
 
 (setq org-log-done 'time)
 
@@ -117,6 +135,9 @@ See also `org-save-all-org-buffers'"
 (advice-add 'org-refile :after
             (lambda (&rest _)
               (gtd-save-org-buffers)))
+
+;; Save org files after quitting agenda
+(advice-add 'org-agenda-quit :before 'org-save-all-org-buffers)
 
 ;; Tracking working hours
 (setq org-clock-persist 'history)

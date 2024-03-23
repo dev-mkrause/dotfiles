@@ -29,6 +29,10 @@
 
 
 (use-package citar
+  :hook
+  (LaTeX-mode . citar-capf-setup)
+  (org-mode . citar-capf-setup)
+
   :bind (("C-c n d c c" . citar-create-note)
          ("C-c n d c o" . citar-denote-open-note)
          ("C-c n d c d" . citar-denote-dwim)
@@ -36,10 +40,11 @@
          ("C-c n d c x" . citar-denote-remove-citekey)
 	 ("C-c n d c o" . citar-open))
   :custom
-  (citar-bibliography org-cite-global-bibliography)
+  (citar-bibliography '("~/Dokumente/zettelkasten/library/library.bib"))
   (org-cite-insert-processor 'citar)
   (org-cite-follow-processor 'citar)
   (org-cite-activate-processor 'citar))
+
 
 
 (use-package citar-denote

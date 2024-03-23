@@ -31,12 +31,22 @@
 (add-to-list 'auto-mode-alist '("\\.beancount\\'" . beancount-mode))
 (add-hook 'beancount-mode-hook #'flymake-bean-check-enable)
 
-(use-package csv-mode)
+(use-package lsp-java :config (add-hook 'java-mode-hook 'lsp))
+(setq lsp-completion-provider :none)
+(defun corfu-lsp-setup ()
+  (setq-local completion-styles '(orderless)
+              completion-category-defaults nil))
+(add-hook 'lsp-mode-hook #'corfu-lsp-setup)
+
+
+(use-package go-mode)
 
 (use-package blacken)
 (use-package eglot)
 (use-package numpydoc)
 (use-package pyvenv)
+
+(use-package yaml-mode)
 
 ;; Hooks
 (add-hook 'python-mode-hook #'blacken-mode)
