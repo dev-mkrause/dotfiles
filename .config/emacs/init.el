@@ -370,6 +370,8 @@ See also `org-save-all-org-buffers'"
   "C-c o" mk/prefix-open-map
   "C-c q" mk/prefix-quit-map)
 
+(mk/keybind minibuffer-local-map
+  "M-a" #'marginalia-cycle)
 
 ;;;;;;;;;;;;;
 ;; Gimmics ;;
