@@ -299,9 +299,9 @@ See also `org-save-all-org-buffers'"
 (mk/package-install 'citar-denote)
 (mk/package-install 'pdf-tools)
 
-(setq denote-directory "~/Dokumente/org/zettelkasten"
-       denote-known-keywords '()
-       denote-prompts '(title keywords signature))
+(setq denote-directory "~/Dokumente/zettelkasten"
+      denote-known-keywords '()
+      denote-prompts '(title keywords signature))
 (add-hook 'dired-mode-hook #'denote-dired-mode)
 
 
