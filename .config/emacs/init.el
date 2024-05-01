@@ -196,7 +196,7 @@ DEFINITIONS is a sequence of string and command pairs."
 (require 'org)
 (add-to-list 'org-modules 'org-depend)
 (setq org-directory "~/Dokumente/org")
-(setq org-agenda-files '("~/Dokumente/org"))
+(setq org-agenda-files (directory-files "~/Dokumente/org/" t "\\.org$"))
 
 (setq org-log-into-drawer t
       org-cycle-separator-lines 0 ;; Don't fold headlines if content is only empty lines.
