@@ -265,7 +265,7 @@ DEFINITIONS is a sequence of string and command pairs."
 
 (defun mk/org-insert-trigger ()
   "Automatically insert chain-find-next trigger when entry becomes NEXT"
-  (cond ((equal org-state "NEXT")
+  (cond ((or (equal org-state "NEXT") (equal org-state "WAITING"))
          (unless org-depend-doing-chain-find-next
            (org-set-property "TRIGGER" "chain-find-next(NEXT,from-current,priority-up,effort-down)")))
         ((not (member org-state org-done-keywords))
