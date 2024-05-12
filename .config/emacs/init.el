@@ -209,7 +209,7 @@ DEFINITIONS is a sequence of string and command pairs."
       org-cycle-separator-lines 0 ;; Don't fold headlines if content is only empty lines.
       org-ellipsis "⤵"
       org-log-done 'time
-      org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "PROJECT(p)" "WAITING(@w!)" "|" "DONE(@d)" "CANCELLED(@c)")))
+      org-todo-keywords '((sequence "TODO(t!)" "NEXT(n!)" "PROJECT(p!)" "WAITING(w@)" "|" "DONE(d@)" "CANCELLED(c@)")))
 
 (setq org-capture-templates
       '(("t" "Personal todo" entry
