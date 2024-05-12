@@ -360,6 +360,7 @@ See also `org-save-all-org-buffers'"
   :doc "Prefix map for search functions."
   :name "Search"
   "s" #'consult-line
+  "d" #'consult-fd
   "r" #'consult-ripgrep)
 
 (defvar-keymap mk/prefix-quit-map
