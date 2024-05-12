@@ -164,6 +164,11 @@ DEFINITIONS is a sequence of string and command pairs."
 (mk/package-install 'vertico)
 (setq vertico-cycle t)
 
+
+(setq read-file-name-completion-ignore-case t
+      read-buffer-completion-ignore-case t
+      completion-ignore-case t)
+
 (mk/package-install 'orderless)
 (setq completion-styles '(orderless basic)
       completion-category-overrides '((file (styles basic partial-completion))))
