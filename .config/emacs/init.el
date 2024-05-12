@@ -58,11 +58,13 @@ DEFINITIONS is a sequence of string and command pairs."
 
 (setq display-line-numbers-type t
       use-short-answers t
-      vc-follow-symlinks t)
+      vc-follow-symlinks t
+      enable-recursive-minibuffers t)
 
 (recentf-mode)
 (pixel-scroll-precision-mode)
 (repeat-mode 1)
+(savehist-mode 1)
 
 (defvar --backup-directory (expand-file-name "backups" user-emacs-directory))
 (if (not (file-exists-p --backup-directory))
