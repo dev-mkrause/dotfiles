@@ -313,6 +313,7 @@ See also `org-save-all-org-buffers'"
 
 
 (setq bibtex-completion-bibliography `(,(expand-file-name "references.bib" denote-directory)))
+(setq bibtex-dialect 'biblatex)
 (setq citar-bibliography bibtex-completion-bibliography)
 
 (setq org-noter-always-create-frame nil)
@@ -321,9 +322,21 @@ See also `org-save-all-org-buffers'"
       citar-open-always-create-notes t)
 
 (setq citar-open-always-create-notes t
-       citar-denote-title-format "author-year")
+       citar-denote-title-format nil)
 (citar-denote-mode)
 
+(mk/package-install 'dired-preview)
+(require 'dired-preview)
+(dired-preview-global-mode)
+
+(mk/package-install 'nov)
+(setq nov-text-width 80
+      visual-fill-column-center-text t)
+
+(mk/package-install 'elfeed)
+(mk/package-install 'elfeed-org)
+(elfeed-org)
+(setq rmh-elfeed-org-files '("~/Dokumente/elfeed.org"))
 
 ;;;;;;;;;;;;;
 ;; Keymaps ;;
