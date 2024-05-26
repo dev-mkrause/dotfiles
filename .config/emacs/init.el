@@ -338,6 +338,10 @@ See also `org-save-all-org-buffers'"
 (elfeed-org)
 (setq rmh-elfeed-org-files '("~/Dokumente/elfeed.org"))
 
+;; Dired
+(add-hook 'dired-mode-hook #'dired-hide-details-mode)
+(add-hook 'dired-mode-hook #'toggle-truncate-lines)
+
 ;;;;;;;;;;;;;
 ;; Keymaps ;;
 ;;;;;;;;;;;;;
