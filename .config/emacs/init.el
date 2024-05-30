@@ -339,6 +339,7 @@ See also `org-save-all-org-buffers'"
 (mk/package-install 'nov)
 (setq nov-text-width 80
       visual-fill-column-center-text t)
+(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 
 (mk/package-install 'elfeed)
 (mk/package-install 'elfeed-org)
