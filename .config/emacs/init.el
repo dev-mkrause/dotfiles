@@ -112,6 +112,10 @@ DEFINITIONS is a sequence of string and command pairs."
 
 (setq eglot-autoshutdown t)
 
+(mk/package-install 'buffer-env)
+(add-hook 'hack-local-variables-hook #'buffer-env-update)
+(add-hook 'comint-mode-hook #'buffer-env-update)
+
 ;;;;;;;;;;;;;;;;
 ;; Lisp Modes ;;
 ;;;;;;;;;;;;;;;;
