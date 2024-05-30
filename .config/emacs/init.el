@@ -50,7 +50,10 @@ DEFINITIONS is a sequence of string and command pairs."
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
-(load-theme 'modus-vivendi :no-confirm)
+
+(mk/package-install 'ef-themes)
+(mapc #'disable-theme custom-enabled-themes)
+(load-theme 'ef-dream :no-confirm)
 (bind-key (kbd "<f5>") #'modus-themes-toggle)
 
 (add-to-list 'default-frame-alist
