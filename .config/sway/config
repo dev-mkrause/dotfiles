@@ -240,7 +240,7 @@ bindsym Escape mode "default"
 bindsym $mod+r mode "resize"
 
 default_border pixel 4 px
-gaps inner 3
+# gaps inner 3
 default_floating_border none
 font Iosevka Nerd Font 10
 titlebar_padding 1
