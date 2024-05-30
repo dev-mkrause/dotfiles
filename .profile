@@ -26,10 +26,8 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
-# Necessary for GPG to work correctly with wayland
-export GPG_TTY=$(tty)
-
-eval $(gpg-agent --daemon)
+GUIX_PROFILE="$HOME/.guix-profile"
+   . "$GUIX_PROFILE/etc/profile"
 
 . "$HOME/.cargo/env"
 
