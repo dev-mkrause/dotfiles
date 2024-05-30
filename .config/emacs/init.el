@@ -349,6 +349,13 @@ See also `org-save-all-org-buffers'"
 ;; Dired
 (add-hook 'dired-mode-hook #'dired-hide-details-mode)
 (add-hook 'dired-mode-hook #'toggle-truncate-lines)
+(add-hook 'dired-mode-hook (lambda () #'dired-omit-mode))
+
+(defun mk/dired-zettelkasten ()
+  "Open zettelkasten's 'denote-directory' in dired"
+  (interactive)
+  (delete-other-windows)
+  (dired denote-directory))
 
 ;;;;;;;;;;;;;
 ;; Keymaps ;;
@@ -361,6 +368,7 @@ See also `org-save-all-org-buffers'"
   "i"     #'denote-link
   "o"     #'denote-find-link
   "O"     #'citar-open
+  "z"     #'mk/dired-zettelkasten
   "b"     #'denote-find-backlink
   "a"     #'denote-keywords-add
   "A"     #'denote-keywords-remove
