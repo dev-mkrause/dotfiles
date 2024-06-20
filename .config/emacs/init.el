@@ -21,6 +21,9 @@
         ("melpa" . 2)
         ("nongnu" . 1)))
 
+(setq user-full-name "Marvin Krause")
+(setq user-mail-address "public@mkrause.org")
+
 (defun mk/package-install (package)
   (unless (package-installed-p package)
     (package-install package)))
@@ -46,7 +49,7 @@ DEFINITIONS is a sequence of string and command pairs."
 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
-(setq use-package-always-ensure t)
+;; (setq use-package-always-ensure nil)
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
@@ -56,13 +59,119 @@ DEFINITIONS is a sequence of string and command pairs."
 (load-theme 'ef-dream :no-confirm)
 (bind-key (kbd "<f5>") #'modus-themes-toggle)
 
+(use-package doom-themes
+  :ensure t
+  :defer
+  :init
+  (defun my/doom-theme-settings (theme &rest args)
+    "Additional face settings for doom themes"
+    (if (eq theme 'doom-rouge)
+          (progn
+            (setq window-divider-default-right-width 2
+                  window-divider-default-bottom-width 2
+                  window-divider-default-places t)
+            (message "Turned on window dividers")
+            (window-divider-mode 1))
+        (window-divider-mode -1)
+        (message "Turned off window dividers"))
+    (when (string-match-p "^doom-" (symbol-name theme))
+      ;; Window dividers
+      (let ((class '((class color) (min-colors 256))))
+        (dolist (face-spec
+                 '((aw-leading-char-face (:height 2.0 :foreground unspecified :inherit mode-line-emphasis)
+                    ace-window)
+                   (aw-background-face (:inherit default :weight normal) ace-window)
+                   (outline-1        (:height 1.25) outline)
+                   (outline-2        (:height 1.20) outline)
+                   (outline-3        (:height 1.16) outline)
+                   (outline-4        (:height 1.12) outline)
+                   ;; (tab-bar            (:background "black" :height 1.0 :foreground "white")
+                   ;;  tab-bar)
+                   ;; (tab-bar-tab
+                   ;;  (:bold t :height 1.10 :foreground nil :inherit mode-line-emphasis)
+                   ;;  tab-bar)
+                   ;; (tab-bar-tab-inactive
+                   ;;  (:inherit 'mode-line-inactive :height 1.10 :background "black")
+                   ;;  tab-bar)
+                   ))
+          (cl-destructuring-bind (face spec library) face-spec
+            (if (featurep library)
+                (custom-set-faces `(,face ((,class ,@spec))))
+              (with-eval-after-load library
+                (when (string-match-p "^doom-" (symbol-name theme))
+                  (custom-set-faces `(,face ((,class ,@spec)))))))))
+        ;; (when (eq theme 'doom-rouge)
+        ;;   (custom-set-faces `(hl-line ((,class :background "#1f2a3f")))))
+        )))
+
+  (advice-add 'load-theme :before #'my/doom-theme-settings)
+
+  :config
+  (doom-themes-org-config)
+  (use-package doom-rouge-theme
+    :config
+    (setq doom-rouge-padded-modeline nil
+          doom-rouge-brighter-comments t
+          doom-rouge-brighter-tabs t))
+
+  (use-package doom-iosvkem-theme
+    :disabled
+    ;; :custom-face
+    ;; (default ((t (:background "#061229"))))
+    :config
+    (setq doom-Iosvkem-brighter-comments nil
+          doom-Iosvkem-comment-bg nil
+          doom-Iosvkem-brighter-modeline nil)))
+
+(use-package custom
+  :ensure nil
+  :commands my/toggle-theme
+  :config
+  (setq custom-theme-directory (expand-file-name "lisp" user-emacs-directory))
+
+  (defun my/toggle-theme (theme)
+    "Swap color themes. With prefix arg, don't disable the
+currently loaded theme first."
+    (interactive
+     (list
+      (intern (completing-read "Load theme: "
+                               (cons "user" (mapcar #'symbol-name
+                                                    (custom-available-themes)))
+                                     nil t))))
+    (unless current-prefix-arg
+      (mapc #'disable-theme custom-enabled-themes))
+    (load-theme theme t)))
+
+(use-package dashboard
+  :ensure t
+  :init (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+  :config
+  (dashboard-setup-startup-hook)
+  (setq dashboard-startup-banner 'logo
+        dashboard-show-shortcuts nil
+        dashboard-center-content t
+        dashboard-items '((recents  . 15))))
+
+(use-package spacious-padding
+  :ensure t
+  :defer
+  :config
+  (setq spacious-padding-widths
+      '( :internal-border-width 16
+         :header-line-width 4
+         :mode-line-width 2
+         :tab-width 2
+         :right-divider-width 24
+         :scroll-bar-width 8)))
+
 (add-to-list 'default-frame-alist
              '(font . "Iosevka Nerd Font-13"))
 
 (setq display-line-numbers-type t
       use-short-answers t
       vc-follow-symlinks t
-      enable-recursive-minibuffers t)
+      enable-recursive-minibuffers t
+      save-interprogram-paste-before-kill t)
 
 (recentf-mode)
 (pixel-scroll-precision-mode)
@@ -90,9 +199,39 @@ DEFINITIONS is a sequence of string and command pairs."
 (mk/package-install 'doom-modeline)
 (doom-modeline-mode)
 
-(mk/package-install 'which-key)
-(which-key-mode)
 
+(use-package which-key
+  :ensure t
+  :defer 10
+  :bind
+  (:map help-map
+   ("h" . which-key-show-major-mode))
+  :init
+  (setq which-key-sort-order #'which-key-description-order 
+        which-key-idle-delay 0.8
+        which-key-idle-secondary-delay 0.1
+        which-key-sort-uppercase-first nil
+        which-key-add-column-padding 0
+        which-key-max-display-columns nil
+        which-key-min-display-lines 8
+        which-key-side-window-slot -10
+        which-key-show-transient-maps nil)
+  :config
+  (push '(("^[0-9-]\\|kp-[0-9]\\|kp-subtract\\|C-u$" . nil) . ignore)
+      which-key-replacement-alist)
+  (set-face-attribute 'which-key-local-map-description-face nil :weight 'bold)
+  (which-key-setup-side-window-bottom)
+  (add-hook 'which-key-init-buffer-hook
+            (lambda () (setq-local line-spacing 3)))
+
+  (advice-add 'which-key-mode :after
+              (lambda (_arg)
+                (when (featurep 'embark)
+                  (setq prefix-help-command
+                        #'embark-prefix-help-command))))
+  
+  (which-key-mode +1)
+  :diminish "")
 
 ;;;;;;;;;;;;;;;;;
 ;; Tree Sitter ;;
@@ -106,6 +245,11 @@ DEFINITIONS is a sequence of string and command pairs."
 ;; Coding & IDE ;;
 ;;;;;;;;;;;;;;;;;;
 (mk/package-install 'magit)
+(mk/package-install 'magit-todos)
+(eval-after-load 'magit magit-todos-mode)
+
+(mk/package-install 'hl-todo)
+(hl-todo-mode)
 
 (add-hook 'prog-mode-hook #'flymake-mode)
 (add-hook 'text-mode #'flymake-mode)
@@ -135,6 +279,36 @@ DEFINITIONS is a sequence of string and command pairs."
 (mk/package-install 'rainbow-delimiters)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
+;;;;;;;;;
+;; Nix ;;
+;;;;;;;;;
+(mk/package-install 'nix-mode)
+(require 'nix-mode)
+(add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-mode))
+
+;;;;;;;;;;
+;; Guix ;;
+;;;;;;;;;;
+(mk/package-install 'geiser)
+(mk/package-install 'geiser-guile)
+(with-eval-after-load 'geiser-guile
+  (add-to-list 'geiser-guile-load-path "~/dev/guix")
+  (add-to-list 'geiser-guile-load-path "~/dev/nonguix"))
+
+;; Assuming the Guix checkout is in ~/dev/guix.
+;; Yasnippet configuration
+(with-eval-after-load 'yasnippet
+  (add-to-list 'yas-snippet-dirs "~/dev/guix/etc/snippets/yas"))
+;; Tempel configuration
+(with-eval-after-load 'tempel
+   ;; Ensure tempel-path is a list -- it may also be a string.
+   (unless (listp 'tempel-path)
+     (setq tempel-path (list tempel-path)))
+   (add-to-list 'tempel-path "~/dev/guix/etc/snippets/tempel/*"))
+
+(load-file "~/dev/guix/etc/copyright.el")
+(setq copyright-names-regexp
+      (format "%s <%s>" user-full-name user-mail-address))
 
 ;;;;;;;;;;;;;;;;;
 ;; vterm setup ;;
@@ -165,6 +339,12 @@ DEFINITIONS is a sequence of string and command pairs."
   "t" #'project-vterm)
 
 
+;;;;;;;;;;;;;
+;; Extras  ;;
+;;;;;;;;;;;;;
+(mk/package-install 'csv-mode)
+(add-hook 'csv-mode-hook 'csv-guess-set-separator)
+
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;; Completion system ;;
 ;;;;;;;;;;;;;;;;;;;;;;;
@@ -183,7 +363,22 @@ DEFINITIONS is a sequence of string and command pairs."
 (mk/package-install 'embark)
 (mk/package-install 'embark-consult)
 (mk/package-install 'consult)
-(mk/package-install 'marginalia)
+;; (mk/package-install 'marginalia)
+(use-package marginalia
+  :ensure t
+  :after setup-minibuffer
+  :init (marginalia-mode 1)
+  :bind (:map vertico-map
+         ("M-]" . marginalia-cycle))
+  :config
+  (pcase-dolist (`(,regexp . ,category)
+                 '(("\\burl\\b" . url)
+                   ("\\bHistory\\b" . history)
+                   ("\\bdefinitions?\\b" . xref-location)
+                   ("\\bxref\\b" . xref-location)))
+    (setf (alist-get regexp marginalia-prompt-categories
+                     nil nil #'equal)
+          category)))
 
 (mk/package-install 'corfu)
 (mk/package-install 'nerd-icons-corfu)
@@ -206,15 +401,21 @@ DEFINITIONS is a sequence of string and command pairs."
 ;; Org Mode ;;
 ;;;;;;;;;;;;;;
 (mk/package-install 'org-contrib)
+(mk/package-install 'ox-hugo)
 
 (require 'org)
 (add-to-list 'org-modules 'org-depend)
 (setq org-directory "~/Dokumente/org")
 (setq org-agenda-files (directory-files "~/Dokumente/org/" t "\\.org$"))
 
+(setq diary-date-forms diary-european-date-forms) ;; Use european format for diary type entries
+
+(with-eval-after-load 'ox
+  (require 'ox-hugo))
+
 (setq org-log-into-drawer t
       org-cycle-separator-lines 0 ;; Don't fold headlines if content is only empty lines.
-      org-ellipsis "⤵"
+      org-ellipsis " ▾"
       org-log-done 'time
       org-todo-keywords '((sequence "TODO(t!)" "NEXT(n!)" "PROJECT(p!)" "WAITING(w@)" "|" "DONE(d@)" "CANCELLED(c@)")))
 
@@ -304,6 +505,17 @@ See also `org-save-all-org-buffers'"
 (add-hook 'org-after-todo-state-change-hook 'mk/org-insert-trigger)
 (add-hook 'org-capture-mode-hook 'delete-other-windows)
 
+(defun mk/org-classify ()
+  "Perform a list of actions on items in inbox."
+  (interactive)
+  (with-current-buffer (find-file "~/Dokumente/org/inbox.org")
+    (dolist (headline (org-element-map (org-element-parse-buffer) 'headline
+			(lambda (elt) elt)))
+	    (progn
+	      (goto-char (org-element-property :begin headline))
+	      (org-todo)
+	      (org-set-tags-command)
+	      (org-refile)))))
 
 ;;;;;;;;;;;;;;;;;;
 ;; Zettelkasten ;;
@@ -376,6 +588,11 @@ See also `org-save-all-org-buffers'"
   "k"     #'citar-denote-add-citekey
   "K"     #'citar-denote-remove-citekey)
 
+(defvar-keymap mk/prefix-organization-map
+  :doc "Prefix map for organization stuff."
+  :name "Organization"
+  "c"    #'mk/org-classify)
+
 (defvar-keymap mk/prefix-open-map
   :doc "Prefix map for opening my stuff."
   :name "Open"
@@ -387,7 +604,8 @@ See also `org-save-all-org-buffers'"
   :name "Notes"
   "a" #'org-agenda
   "n" #'org-capture
-  "d" mk/prefix-zettelkasten-map)
+  "d" mk/prefix-zettelkasten-map
+  "o" mk/prefix-organization-map)
 
 (defvar-keymap mk/prefix-search-map
   :doc "Prefix map for search functions."
