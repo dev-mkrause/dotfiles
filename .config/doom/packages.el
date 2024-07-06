@@ -4,4 +4,9 @@
 (package! denote)
 (package! citar-denote)
 
+
+(package! nov)
+(package! olivetti)
+(package! logos)
+
 (package! paredit)
