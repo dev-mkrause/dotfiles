@@ -11,12 +11,15 @@
 
   (repeat-mode))
 
+;; Programming
+(add-hook 'hack-local-variables-hook #'buffer-env-update)
+(add-hook 'comint-mode-hook #'buffer-env-update)
+
 ;; Lispy stuff
 (dolist (h '(clojure-mode-hook emacs-lisp-mode-hook lisp-interaction-mode-hook scheme-mode-hook))
-    (add-hook h #'paredit-mode))
+  (add-hook h #'paredit-mode))
 
 ;; Org Mode
-(add-to-list 'org-modules 'org-depend)
 (setq org-directory "~/Dokumente/org")
 
 (use-package! org
@@ -28,7 +31,7 @@
   (defun org-current-is-todo ()
     (member (org-get-todo-state) '("TODO")))
 
-  (defun my/org-agenda-should-skip-p ()
+  (defun mk/org-agenda-should-skip-p ()
   "Skip all but the first non-done entry."
   (let (should-skip-entry)
     (unless (org-current-is-todo)
@@ -56,16 +59,16 @@
       (setq should-skip-entry t))
     should-skip-entry))
 
-  (defun my/org-agenda-skip-all-siblings-but-first ()
+  (defun mk/org-agenda-skip-all-siblings-but-first ()
   "Skip all but the first non-done entry."
-  (when (my/org-agenda-should-skip-p)
+  (when (mk/org-agenda-should-skip-p)
     (or (outline-next-heading)
         (goto-char (point-max)))))
 
   (setq org-capture-templates
         '(("t" "Personal todo" entry
            (file "inbox.org")
-           "* TODO %?\n%i" :prepend t)
+           "* TODO %?\n:PROPERTIES:\n:CREATED:  %U\n:END:\n%i\n" :prepend t)
           ("n" "Personal notes" entry
            (file+headline +org-capture-notes-file "Notes")
            "* %u %?\n%i\n%a" :prepend t)
@@ -86,6 +89,45 @@
           ("ot" "Project todo" entry #'+org-capture-central-project-todo-file "* TODO %?\n %i\n %a" :heading "Tasks" :prepend nil)
           ("on" "Project notes" entry #'+org-capture-central-project-notes-file "* %U %?\n %i\n %a" :heading "Notes" :prepend t)
           ("oc" "Project changelog" entry #'+org-capture-central-project-changelog-file "* %U %?\n %i\n %a" :heading "Changelog" :prepend t))))
+
+(use-package org-habit
+  :after org-agenda
+  :config
+  (setq org-habit-preceding-days 42)
+
+  (defvar my/org-habit-show-graphs-everywhere nil
+    "If non-nil, show habit graphs in all types of agenda buffers.
+
+Normally, habits display consistency graphs only in
+\"agenda\"-type agenda buffers, not in other types of agenda
+buffers.  Set this variable to any non-nil variable to show
+consistency graphs in all Org mode agendas.")
+
+  (defun my/org-agenda-mark-habits ()
+    "Mark all habits in current agenda for graph display.
+
+This function enforces `my/org-habit-show-graphs-everywhere' by
+marking all habits in the current agenda as such.  When run just
+before `org-agenda-finalize' (such as by advice; unfortunately,
+`org-agenda-finalize-hook' is run too late), this has the effect
+of displaying consistency graphs for these habits.
+
+When `my/org-habit-show-graphs-everywhere' is nil, this function
+has no effect."
+    (when (and my/org-habit-show-graphs-everywhere
+               (not (get-text-property (point) 'org-series)))
+      (let ((cursor (point))
+            item data)
+        (while (setq cursor (next-single-property-change cursor 'org-marker))
+          (setq item (get-text-property cursor 'org-marker))
+          (when (and item (org-is-habit-p item))
+            (with-current-buffer (marker-buffer item)
+              (setq data (org-habit-parse-todo item)))
+            (put-text-property cursor
+                               (next-single-property-change cursor 'org-marker)
+                               'org-habit-p data))))))
+
+  (advice-add #'org-agenda-finalize :before #'my/org-agenda-mark-habits))
 
 (use-package! org-agenda
   :ensure nil
@@ -115,11 +157,11 @@
    org-agenda-default-appointment-duration 60)
 
   (advice-add 'org-agenda-do-tree-to-indirect-buffer :after
-     (defun my/org-agenda-collapse-indirect-buffer-tree (arg)
+     (defun mk/org-agenda-collapse-indirect-buffer-tree (arg)
        (with-current-buffer org-last-indirect-buffer
          (org-ctrl-c-tab) (org-fold-show-entry 'hide-drawers))))
 
-  (defun my/org-agenda-next-section (arg)
+  (defun mk/org-agenda-next-section (arg)
     (interactive "p")
     (when (> arg 0)
       (dotimes (_ arg)
@@ -128,7 +170,7 @@
           (forward-char 1)))))
 
   ;; FIXME this is broken
-  (defun my/org-agenda-previous-section (arg)
+  (defun mk/org-agenda-previous-section (arg)
     (interactive "p")
     (when (> arg 0)
       (dotimes (_ arg)
@@ -156,8 +198,8 @@
 
   (defun org-current-is-todo ()
     (member (org-get-todo-state) '("TODO" "STARTED")))
-  
-  (defun my/org-agenda-should-skip-p ()
+
+  (defun mk/org-agenda-should-skip-p ()
   "Skip all but the first non-done entry."
   (let (should-skip-entry)
     (unless (org-current-is-todo)
@@ -184,18 +226,17 @@
                               '("PROJECT" "TODO")))))
       (setq should-skip-entry t))
     should-skip-entry))
-  
-  (defun my/org-agenda-skip-all-siblings-but-first ()
+
+  (defun mk/org-agenda-skip-all-siblings-but-first ()
   "Skip all but the first non-done entry."
-  (when (my/org-agenda-should-skip-p)
+  (when (mk/org-agenda-should-skip-p)
     (or (outline-next-heading)
         (goto-char (point-max)))))
-  
- (setq org-agenda-custom-commands
 
+ (setq org-agenda-custom-commands
         '(("n" "Project Next Actions" alltodo ""
            ((org-agenda-overriding-header "Project Next Actions")
-            (org-agenda-skip-function #'my/org-agenda-skip-all-siblings-but-first)))
+            (org-agenda-skip-function #'mk/org-agenda-skip-all-siblings-but-first)))
 
           ("P" "All Projects" tags "TODO=\"PROJECT\"&LEVEL>1|TODO=\"SUSPENDED\"" ;|TODO=\"CLOSED\"
            ((org-agenda-overriding-header "All Projects")))
@@ -218,7 +259,7 @@
             (org-agenda-skip-function '(org-agenda-skip-entry-if 'notscheduled))
             (org-agenda-sorting-strategy '(category-up))
             (org-agenda-prefix-format "%-11c%s ")))
-          
+
           ("u" "Unscheduled tasks" tags "TODO<>\"\"&TODO<>{DONE\\|CANCELED\\|PROJECT\\|DEFERRED\\|SOMEDAY}"
            ((org-agenda-overriding-header "Unscheduled tasks: ")
             (org-agenda-skip-function
@@ -235,10 +276,10 @@
             ))
 
           ("K" "Habits" tags "STYLE=\"habit\""
-           ((my/org-habit-show-graphs-everywhere t)
+           ((mk/org-habit-show-graphs-everywhere t)
             (org-agenda-overriding-header "Habits:")
             (org-habit-show-all-today t)))
-          
+
           ("o" "Overview"
            ((tags-todo "*"
                ((org-agenda-skip-function '(org-agenda-skip-if nil '(timestamp)))
@@ -279,11 +320,12 @@
                      (org-agenda-overriding-header "\n🞜 Upcoming deadlines (+14d)\n")))
             (alltodo ""
              ((org-agenda-overriding-header "Project Next Actions")
-              (org-agenda-skip-function #'my/org-agenda-skip-all-siblings-but-first)))
+              (org-agenda-skip-function #'mk/org-agenda-skip-all-siblings-but-first)))
             (todo "WAITING"
                   ((org-agenda-overriding-header "\n💤 On Hold\n")
                    (org-agenda-block-separator nil))))))))
 
+(use-package simple-httpd)
 
 ;; Zettelkasten
 (use-package denote
@@ -298,6 +340,12 @@
     (interactive)
     (delete-other-windows)
     (dired denote-directory)))
+
+(use-package! citar
+  :config
+  (setq org-cite-insert-processor 'citar)
+  (setq org-cite-follow-processor 'citar)
+  (setq org-cite-activate-processor 'citar))
 
 (use-package! citar-denote
   :config
@@ -328,6 +376,10 @@
        :desc            "Citar add key"         "k"     #'citar-denote-add-citekey
        :desc            "Citar remove key"      "K"     #'citar-denote-remove-citekey))
 
+;; Latex
+(setq-hook! LaTeX-mode TeX-command-default "lualatex")
+
+;; Reading
 (use-package! olivetti)
 
 (use-package! logos
