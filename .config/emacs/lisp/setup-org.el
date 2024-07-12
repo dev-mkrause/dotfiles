@@ -211,7 +211,11 @@
                      (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
                      (org-agenda-overriding-header "\n🞜 Upcoming deadlines (+14d)\n")))
             (alltodo ""
-             ((org-agenda-overriding-header "Project Next Actions")
+		     ((org-agenda-prefix-format '((agenda . " %i %b %-12:c%?-12t% s")
+						  (todo . " %i %b")
+						  (tags . " %i %-12:c")
+						  (search . " %i %-12:c")))
+	      (org-agenda-overriding-header "Project Next Actions")
               (org-agenda-skip-function #'my/org-agenda-skip-all-siblings-but-first)))
             (todo "WAITING"
                   ((org-agenda-overriding-header "\n💤 On Hold\n")
