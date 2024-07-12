@@ -216,7 +216,7 @@
 						  (tags . " %i %-12:c")
 						  (search . " %i %-12:c")))
 		      (org-agenda-block-separator nil)
-		      (org-agenda-overriding-header "Project Next Actions")
+		      (org-agenda-overriding-header "\n🚩 Project Next Actions\n")
 		      (org-agenda-skip-function #'my/org-agenda-skip-all-siblings-but-first)))
             (todo "WAITING"
                   ((org-agenda-overriding-header "\n💤 On Hold\n")
