@@ -21,7 +21,7 @@ set $menu rofi -show
 
 set $editor emacsclient -c -a emacs
 
-set $browser firefox
+set $browser librewolf
 
 set $screenshot flameshot gui
 

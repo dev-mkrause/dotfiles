@@ -5,9 +5,8 @@
 ;; Author: Marvin Krause
 
 ;;; Code:
-(require 'package)
+;; (require 'package)
 (require 'use-package)
-(require 'project)
 
 (defvar elpaca-installer-version 0.7)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
@@ -55,6 +54,11 @@
 
 (elpaca-wait)
 
+(setq use-package-enable-imenu-support t)
+(setq use-package-always-ensure t)
+
+(use-package emacs :ensure nil)
+
 (defun mk/package-install (package)
   (unless (package-installed-p package)
     (package-install package)))
@@ -84,15 +88,6 @@ DEFINITIONS is a sequence of string and command pairs."
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
-
-(mk/package-install 'ef-themes)
-(mapc #'disable-theme custom-enabled-themes)
-(load-theme 'ef-dream :no-confirm)
-(bind-key (kbd "<f5>") #'modus-themes-toggle)
-
-(add-to-list 'default-frame-alist
-             '(font . "Iosevka Nerd Font-13"))
-
 (setq display-line-numbers-type t
       use-short-answers t
       vc-follow-symlinks t
@@ -119,277 +114,123 @@ DEFINITIONS is a sequence of string and command pairs."
       auto-save-timeout 20              ; number of seconds idle time before auto-save (default: 30)
       )
 
-(mk/package-install 'restart-emacs)
+(use-package restart-emacs)
 
-(mk/package-install 'doom-modeline)
-(doom-modeline-mode)
+(use-package olivetti)
 
-(mk/package-install 'which-key)
-(which-key-mode)
+(use-package logos
+  :after olivetti
+  :config
+  (add-hook 'nov-mode-hook (lambda ()
+			     (setq olivetti-body-width 80
+				   olivetti-minimum-body-width 60)
+			     (olivetti-mode)))
+  (setq logos-olivetti t))
 
+(use-package doom-themes
+  :config
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t)
 
-;;;;;;;;;;;;;;;;;
-;; Tree Sitter ;;
-;;;;;;;;;;;;;;;;;
-;; (mk/package-install 'tree-sitter-langs)
-;; (require 'tree-sitter-langs)
-;; (tree-sitter-hl-mode)
-;; (global-tree-sitter-mode)
+  (setq doom-rouge-padded-modeline nil
+        doom-rouge-brighter-comments t
+        doom-rouge-brighter-tabs t)
+  
+  (load-theme 'doom-rouge t)
+  (doom-themes-org-config))
+
+(custom-set-faces
+          '(default ((t (:family "Iosevka Comfy"
+                                 :slant normal :weight normal
+                                 :height 130 :width normal)))))
+
+(use-package doom-modeline
+  :config
+  (doom-modeline-mode))
+
+(use-package pulsar
+  :config
+  (pulsar-global-mode))
+
+(use-package hl-todo
+  :config
+  (global-hl-todo-mode))
+
+;; FIXME: Not working correctly when using with emacsclient?
+(use-package spacious-padding
+  :defer
+  :after doom-themes
+  :config
+  (setq spacious-padding-widths
+	'(:internal-border-width 16
+	  :header-line-width 4
+	  :mode-line-width 2
+	  :tab-width 2
+	  :right-divider-width 24
+	  :scroll-bar-width 8))
+  (spacious-padding-mode))
+
+(use-package which-key
+  :config (which-key-mode))
+
+(setq epa-file-name-regexp "\\.\\(gpg\\|\\asc\\)\\(~\\|\\.~[0-9]+~\\)?\\'")
+(epa-file-name-regexp-update)
+
+(setq dictionary-server "dict.org")
 
 ;;;;;;;;;;;;;;;;;;
 ;; Coding & IDE ;;
 ;;;;;;;;;;;;;;;;;;
-(mk/package-install 'magit)
-
-(add-hook 'prog-mode-hook #'flymake-mode)
-(add-hook 'text-mode #'flymake-mode)
-
-(setq eglot-autoshutdown t)
-
-(mk/package-install 'buffer-env)
-(add-hook 'hack-local-variables-hook #'buffer-env-update)
-(add-hook 'comint-mode-hook #'buffer-env-update)
-
-;;;;;;;;;;;;;;;;
-;; Lisp Modes ;;
-;;;;;;;;;;;;;;;;
-(mk/package-install 'clojure-mode)
-(mk/package-install 'cider)
-(setq cider-repl-pop-to-buffer-on-connect 'display-only)
-
-(add-to-list 'display-buffer-alist
-	     '("cider-repl.*" display-buffer-in-direction
-	       (direction . bottom)
-	       (window . root) (window-height . 0.3)))
-
-(mk/package-install 'paredit)
-(dolist (h '(clojure-mode-hook cider-repl-mode-hook emacs-lisp-mode-hook scheme-mode-hook racket-mode-hook))
- 	(add-hook h #'paredit-mode))
-
-(mk/package-install 'rainbow-delimiters)
-(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
-
-
-;;;;;;;;;;;;;;;;;
-;; vterm setup ;;
-;;;;;;;;;;;;;;;;;
-(mk/package-install 'vterm)
-
-(defun project-vterm ()
-  "Open vterm in the current project root or prompt for one if no project is active."
-  (interactive)
-  (defvar vterm-buffer-name)
-  (let* ((default-directory (project-root    (project-current t)))
-         (vterm-buffer-name (project-prefixed-buffer-name "vterm"))
-         (vterm-buffer (get-buffer vterm-buffer-name)))
-    (if (and vterm-buffer (not current-prefix-arg))
-        (pop-to-buffer vterm-buffer  (bound-and-true-p display-comint-buffer-action))
-      (vterm))))
-
-(setq vterm-kill-buffer-on-exit t)
-(add-hook 'vterm-mode-hook (lambda () (setq confirm-kill-processes nil))) ;; Don't prompt for running processes for open vterms when closing emacs
-
-(add-to-list 'display-buffer-alist
-	     '(".*-vterm.*" display-buffer-in-direction
-	       (direction . bottom)
-	       (window . root) (window-height . 0.3)))
-
-(add-to-list 'project-switch-commands '(project-vterm "Open VTerm"))
-(mk/keybind project-prefix-map
-  "t" #'project-vterm)
-
+(load (expand-file-name "lisp/setup-ide" user-emacs-directory))
 
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;; Completion system ;;
 ;;;;;;;;;;;;;;;;;;;;;;;
-(mk/package-install 'vertico)
-(setq vertico-cycle t)
-
+(use-package vertico
+  :config
+  (setq vertico-cycle t)
+  (vertico-mode))
 
 (setq read-file-name-completion-ignore-case t
       read-buffer-completion-ignore-case t
       completion-ignore-case t)
 
-(mk/package-install 'orderless)
-(setq completion-styles '(orderless basic)
-      completion-category-overrides '((file (styles basic partial-completion))))
+(use-package orderless
+  :config
+  (setq completion-styles '(orderless basic)
+      completion-category-overrides '((file (styles basic partial-completion)))))
 
-(mk/package-install 'embark)
-(mk/package-install 'embark-consult)
-(mk/package-install 'consult)
-(mk/package-install 'marginalia)
+(use-package embark)
+(use-package embark-consult)
+(use-package consult)
+(use-package marginalia
+  :config
+  (marginalia-mode))
 
-(mk/package-install 'corfu)
-(mk/package-install 'nerd-icons-corfu)
+(use-package corfu
+  :config
+  (setq corfu-auto t
+	corfu-auto-prefix 2
+	corfu-cycle t)
+  (global-corfu-mode))
 
-(require 'corfu)
-(add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter)
-(setq corfu-auto t
-      corfu-auto-prefix 2
-      corfu-cycle t)
-
-(global-corfu-mode)
-(vertico-mode)
-(marginalia-mode)
+(use-package nerd-icons-corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
 (mk/keybind global-map
   "C-." #'embark-act)
 
 
 ;;;;;;;;;;;;;;
+;; Personal ;;
+;;;;;;;;;;;;;;
+(load (expand-file-name "lisp/setup-personal" user-emacs-directory))
+
+;;;;;;;;;;;;;;
 ;; Org Mode ;;
 ;;;;;;;;;;;;;;
-(mk/package-install 'org-contrib)
-
-(require 'org)
-(add-to-list 'org-modules 'org-depend)
-(setq org-directory "~/Dokumente/org")
-(setq org-agenda-files (directory-files "~/Dokumente/org/" t "\\.org$"))
-
-(setq org-log-into-drawer t
-      org-cycle-separator-lines 0 ;; Don't fold headlines if content is only empty lines.
-      org-ellipsis "⤵"
-      org-log-done 'time
-      org-todo-keywords '((sequence "TODO(t!)" "NEXT(n!)" "PROJECT(p!)" "WAITING(w@)" "|" "DONE(d@)" "CANCELLED(c@)")))
-
-(setq org-capture-templates
-      '(("t" "Personal todo" entry
-         (file "inbox.org")
-         "* TODO %?\n%i" :prepend t)
-        ("n" "Personal notes" entry
-         (file+headline "inbox.org" "Notes")
-         "* %u %?\n%i\n%a" :prepend t)
-        ("j" "Journal" entry
-         (file+olp+datetree "journal.org")
-         "* %U %?\n%i\n%a" :prepend t)
-        ("p" "Templates for projects")))
-
-(setq org-agenda-custom-commands
-      '(("g" "GTD"
-	 ((agenda ""
-		  ((org-agenda-skip-function
-		    '(org-agenda-skip-entry-if 'deadline))
-		   (org-scheduled-past-days 0)
-		   (org-deadline-warning-days 0)))
-	  (todo "NEXT"
-		((org-agenda-skip-function
-		  '(org-agenda-skip-entry-if 'deadline))
-		 (org-agenda-prefix-format "  %i %-12:c [%e] ")
-		 (org-agenda-overriding-header "\nTasks\n")))
-	  (todo "WAITING"
-		((org-agenda-skip-function
-		  '(org-agenda-skip-entry-if 'deadline))
-		 (org-agenda-prefix-format "  %i %-12:c [%e] ")
-		 (org-agenda-overriding-header "\nWarten auf...\n")))
-	  (agenda nil
-		  ((org-agenda-entry-types '(:deadline))
-		   (org-agenda-format-date "")
-		   (org-agenda-span 1)
-		   (org-deadline-warning-days 7)
-		   (org-agenda-overriding-header "\nDeadlines")))
-	  (agenda "" ((org-agenda-overriding-header "Overdue")
-		      (org-agenda-time-grid nil)
-		      (org-agenda-start-on-weekday nil)
-		      (org-agenda-show-all-dates nil)
-		      (org-agenda-format-date "")  ;; Skip the date
-		      (org-agenda-span 1)
-		      (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-		      (org-agenda-entry-types '(:deadline :scheduled))
-		      (org-scheduled-past-days 999)
-		      (org-deadline-past-days 999)
-		      (org-deadline-warning-days 0)))
-	  (tags-todo "inbox"
-		     ((org-agenda-prefix-format "  %?-12t% s")
-		      (org-agenda-overriding-header "\nInbox\n")))
-	  (tags "CLOSED>=\"<today>\""
-		((org-agenda-overriding-header "\nCompleted today\n")))))))
-
-(defun mk/org-insert-trigger ()
-  "Automatically insert chain-find-next trigger when entry becomes NEXT"
-  (cond ((or (equal org-state "NEXT") (equal org-state "WAITING"))
-         (unless org-depend-doing-chain-find-next
-           (org-set-property "TRIGGER" "chain-find-next(NEXT,from-current,priority-up,effort-down)")))
-        ((not (member org-state org-done-keywords))
-         (org-delete-property "TRIGGER"))))
-
-;; Save the corresponding buffers
-(defun gtd-save-org-buffers ()
-  "Save `org-agenda-files' buffers without user confirmation.
-See also `org-save-all-org-buffers'"
-  (interactive)
-  (message "Saving org-agenda-files buffers...")
-  (save-some-buffers t (lambda () 
-			 (when (member (buffer-file-name) org-agenda-files) 
-			   t)))
-  (message "Saving org-agenda-files buffers... done"))
-
-(setq org-refile-use-outline-path 'file)
-(setq org-outline-path-complete-in-steps nil)
-(setq org-refile-targets
-      '(("projects.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)")
-	("todo.org" :maxlevel . 1)
-	("someday.org" :level . 1)))
-
-;; Add it after refile
-(advice-add 'org-refile :after
-	    (lambda (&rest _)
-	      (gtd-save-org-buffers)))
-
-(add-hook 'org-after-todo-state-change-hook 'mk/org-insert-trigger)
-(add-hook 'org-capture-mode-hook 'delete-other-windows)
-
-
-;;;;;;;;;;;;;;;;;;
-;; Zettelkasten ;;
-;;;;;;;;;;;;;;;;;;
-(mk/package-install 'denote)
-(mk/package-install 'citar)
-(mk/package-install 'citar-denote)
-(mk/package-install 'pdf-tools)
-
-(setq denote-directory "~/Dokumente/zettelkasten"
-      denote-known-keywords '()
-      denote-prompts '(title keywords signature))
-(add-hook 'dired-mode-hook #'denote-dired-mode)
-
-
-(setq bibtex-completion-bibliography `(,(expand-file-name "references.bib" denote-directory)))
-(setq bibtex-dialect 'biblatex)
-(setq citar-bibliography bibtex-completion-bibliography)
-
-(setq org-noter-always-create-frame nil)
-
-(setq citar-library-paths `(,(expand-file-name "library/" denote-directory))
-      citar-open-always-create-notes t)
-
-(setq citar-open-always-create-notes t
-       citar-denote-title-format nil)
-(citar-denote-mode)
-
-(mk/package-install 'dired-preview)
-(require 'dired-preview)
-(dired-preview-global-mode)
-
-(mk/package-install 'nov)
-(setq nov-text-width 80
-      visual-fill-column-center-text t)
-(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-
-(mk/package-install 'elfeed)
-(mk/package-install 'elfeed-org)
-(elfeed-org)
-(setq rmh-elfeed-org-files '("~/Dokumente/elfeed.org"))
-
-;; Dired
-(add-hook 'dired-mode-hook #'dired-hide-details-mode)
-(add-hook 'dired-mode-hook #'toggle-truncate-lines)
-(add-hook 'dired-mode-hook (lambda () #'dired-omit-mode))
-
-(defun mk/dired-zettelkasten ()
-  "Open zettelkasten's 'denote-directory' in dired"
-  (interactive)
-  (delete-other-windows)
-  (dired denote-directory))
+(load (expand-file-name "lisp/setup-org" user-emacs-directory))
 
 ;;;;;;;;;;;;;
 ;; Keymaps ;;
@@ -428,6 +269,7 @@ See also `org-save-all-org-buffers'"
   :name "Search"
   "s" #'consult-line
   "d" #'consult-fd
+  "D" #'dictionary-search
   "r" #'consult-ripgrep)
 
 (defvar-keymap mk/prefix-quit-map
@@ -451,6 +293,8 @@ See also `org-save-all-org-buffers'"
 ;;;;;;;;;;;;;
 ;; Gimmics ;;
 ;;;;;;;;;;;;;
-(mk/package-install 'nerd-icons)
-(mk/package-install 'nerd-icons-dired)
-(add-hook 'dired-mode-hook #'nerd-icons-dired-mode)
+(use-package nerd-icons)
+(use-package nerd-icons-dired
+  :config
+  (add-hook 'dired-mode-hook #'nerd-icons-dired-mode))
+
