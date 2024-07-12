@@ -14,11 +14,10 @@
 	org-special-ctrl-k t
 	org-imenu-depth 7
 	org-refile-target-verify-function nil
-        org-refile-use-outline-path t
-        org-refile-use-cache t
-	org-refile-targets '((nil :maxlevel . 2)
-                             (org-agenda-files :maxlevel . 2)
-                             (org-agenda-files :todo . "PROJECT"))))
+	org-outline-path-complete-in-steps nil
+        org-refile-use-outline-path 'file
+        org-refile-use-cache nil
+	org-refile-targets '((org-agenda-files :todo . "PROJECT"))))
 
 (use-package org-agenda
   :ensure nil
