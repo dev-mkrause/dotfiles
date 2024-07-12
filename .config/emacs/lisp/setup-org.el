@@ -48,9 +48,9 @@
    org-agenda-default-appointment-duration 60)
 
   (advice-add 'org-agenda-do-tree-to-indirect-buffer :after
-     (defun my/org-agenda-collapse-indirect-buffer-tree (arg)
-       (with-current-buffer org-last-indirect-buffer
-         (org-ctrl-c-tab) (org-fold-show-entry 'hide-drawers))))
+	      (defun my/org-agenda-collapse-indirect-buffer-tree (arg)
+		(with-current-buffer org-last-indirect-buffer
+		  (org-ctrl-c-tab) (org-fold-show-entry 'hide-drawers))))
 
   (defun my/org-agenda-next-section (arg)
     (interactive "p")
@@ -91,40 +91,40 @@
     (member (org-get-todo-state) '("TODO" "STARTED")))
   
   (defun my/org-agenda-should-skip-p ()
-  "Skip all but the first non-done entry."
-  (let (should-skip-entry)
-    (unless (org-current-is-todo)
-      (setq should-skip-entry t))
-    (when (or (org-get-scheduled-time (point))
-              (org-get-deadline-time (point)))
-      (setq should-skip-entry t))
-    (when (/= (point)
-              (save-excursion
-                (org-goto-first-child)
-                (point)))
-      (setq should-skip-entry t))
-    (save-excursion
-      (while (and (not should-skip-entry) (org-goto-sibling t))
-        (when (and (org-current-is-todo)
-                   (not (org-get-scheduled-time (point)))
-                   (not (org-get-deadline-time (point))))
-          (setq should-skip-entry t))))
-    (when (and (not should-skip-entry)
-               (save-excursion
-                 (unless (= (org-outline-level) 1)
-                   (outline-up-heading 1 t))
-                 (not (member (org-get-todo-state)
-                              '("PROJECT")))))
-      (setq should-skip-entry t))
-    should-skip-entry))
+    "Skip all but the first non-done entry."
+    (let (should-skip-entry)
+      (unless (org-current-is-todo)
+	(setq should-skip-entry t))
+      (when (or (org-get-scheduled-time (point))
+		(org-get-deadline-time (point)))
+	(setq should-skip-entry t))
+      (when (/= (point)
+		(save-excursion
+                  (org-goto-first-child)
+                  (point)))
+	(setq should-skip-entry t))
+      (save-excursion
+	(while (and (not should-skip-entry) (org-goto-sibling t))
+          (when (and (org-current-is-todo)
+                     (not (org-get-scheduled-time (point)))
+                     (not (org-get-deadline-time (point))))
+            (setq should-skip-entry t))))
+      (when (and (not should-skip-entry)
+		 (save-excursion
+                   (unless (= (org-outline-level) 1)
+                     (outline-up-heading 1 t))
+                   (not (member (org-get-todo-state)
+				'("PROJECT")))))
+	(setq should-skip-entry t))
+      should-skip-entry))
   
   (defun my/org-agenda-skip-all-siblings-but-first ()
-  "Skip all but the first non-done entry."
-  (when (my/org-agenda-should-skip-p)
-    (or (outline-next-heading)
-        (goto-char (point-max)))))
+    "Skip all but the first non-done entry."
+    (when (my/org-agenda-should-skip-p)
+      (or (outline-next-heading)
+          (goto-char (point-max)))))
   
- (setq org-agenda-custom-commands
+  (setq org-agenda-custom-commands
 
         '(("n" "Project Next Actions" alltodo ""
            ((org-agenda-overriding-header "Project Next Actions")
@@ -174,13 +174,13 @@
           
           ("o" "Overview"
            ((tags-todo "*"
-               ((org-agenda-skip-function '(org-agenda-skip-if nil '(timestamp)))
-                (org-agenda-skip-function
-                 `(org-agenda-skip-entry-if
-                   'notregexp ,(format "\\[#%s\\]" ;;(char-to-string org-priority-highest)
-                                       "\\(?:A\\|B\\|C\\)")))
-                (org-agenda-block-separator nil)
-                (org-agenda-overriding-header "⛤ Important\n")))
+		       ((org-agenda-skip-function '(org-agenda-skip-if nil '(timestamp)))
+			(org-agenda-skip-function
+			 `(org-agenda-skip-entry-if
+			   'notregexp ,(format "\\[#%s\\]" ;;(char-to-string org-priority-highest)
+					       "\\(?:A\\|B\\|C\\)")))
+			(org-agenda-block-separator nil)
+			(org-agenda-overriding-header "⛤ Important\n")))
             (agenda ""
                     ((org-agenda-overriding-header "\n🕐 Today\n")
                      (org-agenda-span 1)
@@ -195,8 +195,8 @@
 			(org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
 			(org-agenda-overriding-header "\n📅 Next three days\n")))
             (tags "CATEGORY=\"Inbox\"&LEVEL=1"
-             ((org-agenda-block-separator nil)
-              (org-agenda-overriding-header "\n📧 Inbox\n")))
+		  ((org-agenda-block-separator nil)
+		   (org-agenda-overriding-header "\n📧 Inbox\n")))
             (agenda ""
                     ((org-agenda-time-grid nil)
                      (org-agenda-start-on-weekday nil)
@@ -215,8 +215,9 @@
 						  (todo . " %i %b")
 						  (tags . " %i %-12:c")
 						  (search . " %i %-12:c")))
-	      (org-agenda-overriding-header "Project Next Actions")
-              (org-agenda-skip-function #'my/org-agenda-skip-all-siblings-but-first)))
+		      (org-agenda-block-separator nil)
+		      (org-agenda-overriding-header "Project Next Actions")
+		      (org-agenda-skip-function #'my/org-agenda-skip-all-siblings-but-first)))
             (todo "WAITING"
                   ((org-agenda-overriding-header "\n💤 On Hold\n")
                    (org-agenda-block-separator nil))))))))
