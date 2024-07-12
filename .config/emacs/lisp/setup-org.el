@@ -257,6 +257,24 @@ has no effect."
 
   (advice-add #'org-agenda-finalize :before #'my/org-agenda-mark-habits))
 
+(use-package org-capture
+  :ensure nil
+  :after org
+  :defer
+  :config
+  (pcase-dolist
+      (`(,key . ,template)
+       '(("r" "Add resource" entry (file "~/Dokumente/org/inbox.org")
+          "* TODO [[%c][%^{Title: }]] %^G\n:PROPERTIES:\n:CREATED:  %U\n:END:\n"
+          :immediate-finish t)
+         ("t" "Add task" entry (file "~/Dokumente/org/inbox.org")
+          "* TODO %?\n:PROPERTIES:\n:CREATED:  %U\n:END:\n%a\n%i\n")
+         ("c" "Add calendar entry" entry (file "~/Dokumente/org/gmail-cal.org")
+          "* %?\n%^{LOCATION}p\n:%(progn (require 'org-gcal) (symbol-value 'org-gcal-drawer-name)):
+%a\n:END:")))
+    (setf (alist-get key org-capture-templates nil nil #'equal)
+          template)))
+
 (use-package org-modern
   :after org
   :ensure (:host github
