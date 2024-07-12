@@ -114,7 +114,7 @@
                  (unless (= (org-outline-level) 1)
                    (outline-up-heading 1 t))
                  (not (member (org-get-todo-state)
-                              '("PROJECT" "TODO")))))
+                              '("PROJECT")))))
       (setq should-skip-entry t))
     should-skip-entry))
   
