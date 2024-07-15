@@ -202,7 +202,16 @@ DEFINITIONS is a sequence of string and command pairs."
 
 (use-package embark)
 (use-package embark-consult)
-(use-package consult)
+
+(use-package consult
+  :config
+  (setq consult-fd-args '((if
+     (executable-find "fdfind" 'remote)
+     "fdfind" "fd")
+ "--full-path --color=never --hidden"))
+  (setq consult-ripgrep-args "rg --null --line-buffered --color=never --max-columns=1000 --path-separator /   
+--smart-case --no-heading --with-filename --line-number --search-zip --hidden"))
+
 (use-package marginalia
   :config
   (marginalia-mode))
