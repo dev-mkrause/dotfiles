@@ -1,11 +1,28 @@
-;;; init.el --- My personal emacs configuration      -*- lexical-binding: t; -*-
+;;; init.el --- My personal emacs config             -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024  Marvin Krause
 
-;; Author: Marvin Krause
+;; Author: Marvin Krause <public@mkrause.org>
+;; Keywords: 
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; 
 
 ;;; Code:
-;; (require 'package)
 (require 'use-package)
 
 (defvar elpaca-installer-version 0.7)
@@ -57,11 +74,18 @@
 (setq use-package-enable-imenu-support t)
 (setq use-package-always-ensure t)
 
-(use-package emacs :ensure nil)
+(use-package emacs :ensure nil
+  :config
+  (blink-cursor-mode -1)
+  (auto-insert-mode))
 
 (defun mk/package-install (package)
   (unless (package-installed-p package)
     (package-install package)))
+
+(defun mk/remap-command (old-command new-command)
+  "Remap command from 'old-command' to 'new-command'"
+  (global-set-key [remap old-command] new-command))
 
 (defmacro mk/keybind (keymap &rest definitions)
   "Expand key binding DEFINITIONS for the given KEYMAP.
@@ -136,13 +160,13 @@ DEFINITIONS is a sequence of string and command pairs."
         doom-rouge-brighter-comments t
         doom-rouge-brighter-tabs t)
   
-  (load-theme 'doom-rouge t)
+  (load-theme 'modus-operandi t)
   (doom-themes-org-config))
 
 (custom-set-faces
-          '(default ((t (:family "Iosevka Comfy"
-                                 :slant normal :weight normal
-                                 :height 130 :width normal)))))
+ '(default ((t (:family "Iosevka Comfy"
+                        :slant normal :weight normal
+                        :height 130 :width normal)))))
 
 (use-package doom-modeline
   :config
@@ -156,19 +180,27 @@ DEFINITIONS is a sequence of string and command pairs."
   :config
   (global-hl-todo-mode))
 
-;; FIXME: Not working correctly when using with emacsclient?
 (use-package spacious-padding
-  :defer
-  :after doom-themes
   :config
   (setq spacious-padding-widths
-	'(:internal-border-width 16
-	  :header-line-width 4
-	  :mode-line-width 2
-	  :tab-width 2
-	  :right-divider-width 24
-	  :scroll-bar-width 8))
-  (spacious-padding-mode))
+	'( :internal-border-width 15
+           :header-line-width 4
+           :mode-line-width 6
+           :tab-width 4
+           :right-divider-width 30
+           :scroll-bar-width 8
+           :fringe-width 8))
+
+  ;; Read the doc string of `spacious-padding-subtle-mode-line' as it
+  ;; is very flexible and provides several examples.
+  (setq spacious-padding-subtle-mode-line
+	`( :mode-line-active 'default
+           :mode-line-inactive vertical-border))
+
+  (spacious-padding-mode 1)
+
+  ;; Set a key binding if you need to toggle spacious padding.
+  (define-key global-map (kbd "<f8>") #'spacious-padding-mode))
 
 (use-package which-key
   :config (which-key-mode))
@@ -187,7 +219,7 @@ DEFINITIONS is a sequence of string and command pairs."
 ;; Completion system ;;
 ;;;;;;;;;;;;;;;;;;;;;;;
 (use-package vertico
-  :config
+ :config
   (setq vertico-cycle t)
   (vertico-mode))
 
@@ -200,7 +232,11 @@ DEFINITIONS is a sequence of string and command pairs."
   (setq completion-styles '(orderless basic)
       completion-category-overrides '((file (styles basic partial-completion)))))
 
-(use-package embark)
+(use-package embark
+  :config
+  (mk/keybind global-map
+    "C-." #'embark-act))
+
 (use-package embark-consult)
 
 (use-package consult
@@ -219,27 +255,34 @@ DEFINITIONS is a sequence of string and command pairs."
 (use-package corfu
   :config
   (setq corfu-auto t
-	corfu-auto-prefix 2
-	corfu-cycle t)
+    	corfu-auto-prefix 2
+    	corfu-cycle t)
   (global-corfu-mode))
 
 (use-package nerd-icons-corfu
   :config
   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
-(mk/keybind global-map
-  "C-." #'embark-act)
-
-
 ;;;;;;;;;;;;;;
 ;; Personal ;;
 ;;;;;;;;;;;;;;
 (load (expand-file-name "lisp/setup-personal" user-emacs-directory))
 
+;;;;;;;;;;;
+;; Dired ;;
+;;;;;;;;;;;
+(load (expand-file-name "lisp/setup-dired" user-emacs-directory))
+
 ;;;;;;;;;;;;;;
 ;; Org Mode ;;
 ;;;;;;;;;;;;;;
 (load (expand-file-name "lisp/setup-org" user-emacs-directory))
+
+
+;;;;;;;;;;;;;;;;;;
+;; Zettelkasten ;;
+;;;;;;;;;;;;;;;;;;
+(load (expand-file-name "lisp/setup-zettelkasten" user-emacs-directory))
 
 ;;;;;;;;;;;;;
 ;; Keymaps ;;
@@ -263,7 +306,8 @@ DEFINITIONS is a sequence of string and command pairs."
 (defvar-keymap mk/prefix-open-map
   :doc "Prefix map for opening my stuff."
   :name "Open"
-  "t" #'vterm
+  "t" #'eat
+  "e" #'eshell
   "r" #'recentf)
 
 (defvar-keymap mk/prefix-notes-map
@@ -277,6 +321,7 @@ DEFINITIONS is a sequence of string and command pairs."
   :doc "Prefix map for search functions."
   :name "Search"
   "s" #'consult-line
+  "o" #'occur
   "d" #'consult-fd
   "D" #'dictionary-search
   "r" #'consult-ripgrep)
@@ -307,3 +352,4 @@ DEFINITIONS is a sequence of string and command pairs."
   :config
   (add-hook 'dired-mode-hook #'nerd-icons-dired-mode))
 
+;;; init.el ends here

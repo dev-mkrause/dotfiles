@@ -1,15 +1,40 @@
+;;; setup-org.el --- Org Mode Setup                  -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2024  Marvin Krause
+
+;; Author: Marvin Krause <public@mkrause.org>
+;; Keywords: 
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; 
+
+;;; Code:
+
 (use-package org
   :bind (("\C-cl" . org-store-link)
 	 ("<f5>" . org-capture)
 	 ("<f6>" . org-agenda)) 
   :config
   (setq org-todo-keywords '((sequence "TODO(t)" "PROJECT(p!)" "DEFERRED(b@/!)" "SUSPENDED(S@/!)" "WAITING(w@/!)" "DELEGATED(D@/!)" "APPT(a@/!)" "SOMEDAY(s@/!)" "|" "DONE(d@/!)" "CANCELED(c@/!)"))
-	org-agenda-files '("~/Dokumente/org/projects.org" "~/Dokumente/org/todo.org" "~/Dokumente/org/inbox.org" "~/Dokumente/org/someday.org")
+	org-agenda-files '("~/Dokumente/org/todo.org" "~/Dokumente/org/inbox.org" "~/Dokumente/org/repeating.org" "~/Dokumente/org/someday.org")
 	org-log-into-drawer t
-	org-cycle-separator-lines 1
+	org-cycle-separator-lines -1
 	org-log-done 'time
 	org-return-follows-link t
-	org-ellipsis " ▾"
 	org-special-ctrl-a t
 	org-special-ctrl-k t
 	org-imenu-depth 7
@@ -284,4 +309,17 @@ has no effect."
   :ensure (:host github
 		 :repo "minad/org-modern")
   :config
-  (add-hook 'org-mode-hook #'org-modern-mode))
+  (setq org-ellipsis "…"
+	org-modern-hide-stars nil
+	org-modern-hide-stars 'leading)
+  (set-face-attribute 'org-ellipsis nil :inherit 'default :box nil)
+  
+  (defun mk/org-modern-spacing ()
+    (setq-local line-spacing
+                (if org-modern-mode
+                    0.1 0.0)))
+
+  (add-hook 'org-modern-mode-hook #'my/org-modern-spacing)
+  (add-hook 'org-mode-hook #'org-modern-mode)
+  (add-hook 'org-agenda-finalize-hook #'org-modern-agenda))
+;;; setup-org.el ends here
