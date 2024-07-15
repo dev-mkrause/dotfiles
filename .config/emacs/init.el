@@ -76,16 +76,58 @@
 
 (use-package emacs :ensure nil
   :config
+  (setq display-line-numbers-type t
+	use-short-answers t
+	vc-follow-symlinks t
+	enable-recursive-minibuffers t)
+
+  (defvar --backup-directory (expand-file-name "backups" user-emacs-directory))
+  (if (not (file-exists-p --backup-directory))
+      (make-directory --backup-directory t))
+
+  (setq backup-directory-alist `(("." . ,--backup-directory)))
+  (setq make-backup-files t               ; backup of a file the first time it is saved.
+	backup-by-copying t               ; don't clobber symlinks
+	version-control t                 ; version numbers for backup files
+	delete-old-versions t             ; delete excess backup files silently
+	delete-by-moving-to-trash t
+	kept-old-versions 6               ; oldest versions to keep when a new numbered backup is made (default: 2)
+	kept-new-versions 9               ; newest versions to keep when a new numbered backup is made (default: 2)
+	auto-save-default t               ; auto-save every buffer that visits a file
+	)
+
+  (recentf-mode)
+  (pixel-scroll-precision-mode)
+  (repeat-mode 1)
+  (savehist-mode 1)
   (blink-cursor-mode -1)
   (auto-insert-mode))
+
+(use-package tramp
+  :ensure nil
+  :config
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
+
+ (defun sudo-find-file (file)
+    "Open FILE as root."
+    (interactive "FOpen file as root: ")
+    (when (file-writable-p file)
+      (user-error "File is user writeable, aborting sudo"))
+    (find-file (if (file-remote-p file)
+                   (concat "/" (file-remote-p file 'method) ":"
+                           (file-remote-p file 'user) "@" (file-remote-p file 'host)
+                           "|sudo:root@"
+                           (file-remote-p file 'host) ":" (file-remote-p file 'localname))
+                 (concat "/sudo:root@localhost:" file))))
+
+  (defun sudo-this-file ()
+    "Open the current file as root."
+    (interactive)
+    (sudo-find-file (file-truename buffer-file-name)))
 
 (defun mk/package-install (package)
   (unless (package-installed-p package)
     (package-install package)))
-
-(defun mk/remap-command (old-command new-command)
-  "Remap command from 'old-command' to 'new-command'"
-  (global-set-key [remap old-command] new-command))
 
 (defmacro mk/keybind (keymap &rest definitions)
   "Expand key binding DEFINITIONS for the given KEYMAP.
@@ -106,37 +148,10 @@ DEFINITIONS is a sequence of string and command pairs."
                 `(define-key map (kbd ,key) ,command))))
           (cl-mapcar #'cons keys commands)))))
 
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-
 (setq use-package-always-ensure t)
 
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
-
-(setq display-line-numbers-type t
-      use-short-answers t
-      vc-follow-symlinks t
-      enable-recursive-minibuffers t)
-
-(recentf-mode)
-(pixel-scroll-precision-mode)
-(repeat-mode 1)
-(savehist-mode 1)
-
-(defvar --backup-directory (expand-file-name "backups" user-emacs-directory))
-(if (not (file-exists-p --backup-directory))
-    (make-directory --backup-directory t))
-
-(setq backup-directory-alist `(("." . ,--backup-directory)))
-(setq make-backup-files t               ; backup of a file the first time it is saved.
-      backup-by-copying t               ; don't clobber symlinks
-      version-control t                 ; version numbers for backup files
-      delete-old-versions t             ; delete excess backup files silently
-      delete-by-moving-to-trash t
-      kept-old-versions 6               ; oldest versions to keep when a new numbered backup is made (default: 2)
-      kept-new-versions 9               ; newest versions to keep when a new numbered backup is made (default: 2)
-      auto-save-default t               ; auto-save every buffer that visits a file
-      auto-save-timeout 20              ; number of seconds idle time before auto-save (default: 30)
-      )
 
 (use-package restart-emacs)
 
@@ -235,7 +250,9 @@ DEFINITIONS is a sequence of string and command pairs."
 (use-package embark
   :config
   (mk/keybind global-map
-    "C-." #'embark-act))
+    "C-." #'embark-act)
+  (mk/keybind embark-file-map
+    "s" #'sudo-find-file))
 
 (use-package embark-consult)
 
@@ -333,9 +350,16 @@ DEFINITIONS is a sequence of string and command pairs."
   "R" #'restart-emacs-start-new-emacs
   "f" #'delete-frame)
 
+(defvar-keymap mk/prefix-files-map
+  :doc "Prefix keymap for files."
+  :name "Files"
+  "u" #'sudo-find-file
+  "U" #'sudo-this-file)
+
 (mk/keybind global-map
   "C-z" nil ;; Remove suspend frame
   "C-x C-z" nil
+  "C-c f" mk/prefix-files-map
   "C-c n" mk/prefix-notes-map
   "C-c s" mk/prefix-search-map
   "C-c o" mk/prefix-open-map

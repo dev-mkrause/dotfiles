@@ -319,7 +319,7 @@ has no effect."
                 (if org-modern-mode
                     0.1 0.0)))
 
-  (add-hook 'org-modern-mode-hook #'my/org-modern-spacing)
+  (add-hook 'org-modern-mode-hook #'mk/org-modern-spacing)
   (add-hook 'org-mode-hook #'org-modern-mode)
   (add-hook 'org-agenda-finalize-hook #'org-modern-agenda))
 ;;; setup-org.el ends here

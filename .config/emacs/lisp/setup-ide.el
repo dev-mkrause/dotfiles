@@ -30,6 +30,12 @@
 (use-package flymake
   :ensure nil
   :config
+  (setq flymake-fringe-indicator-position 'right-fringe)
+  (mk/keybind flymake-mode-map
+    "M-n" #'flymake-goto-next-error
+    "M-p" #'flymake-goto-prev-error
+    "C-c ! p" #'flymake-show-project-diagnostics
+    "C-c ! !" #'flymake-show-buffer-diagnostics)0
   (add-hook 'prog-mode-hook #'flymake-mode)
   (add-hook 'text-mode #'flymake-mode))
 
