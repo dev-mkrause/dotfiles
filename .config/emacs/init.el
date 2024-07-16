@@ -103,6 +103,13 @@
   (blink-cursor-mode -1)
   (auto-insert-mode))
 
+(use-package minibuffer
+  :ensure nil
+  :config
+  (setq  read-buffer-completion-ignore-case t
+	 read-file-name-completion-ignore-case t
+	 read-answer-short t))
+
 (use-package tramp
   :ensure nil
   :config
@@ -258,15 +265,34 @@ DEFINITIONS is a sequence of string and command pairs."
 
 (use-package consult
   :config
+  (mk/keybind (current-global-map)
+    [remap bookmark-jump]                 #'consult-bookmark
+    [remap evil-show-marks]               #'consult-mark
+    [remap evil-show-jumps]               #'+vertico/jump-list
+    [remap evil-show-registers]           #'consult-register
+    [remap goto-line]                     #'consult-goto-line
+    [remap imenu]                         #'consult-imenu
+    [remap Info-search]                   #'consult-info
+    [remap locate]                        #'consult-locate
+    [remap load-theme]                    #'consult-theme
+    [remap man]                           #'consult-man
+    [remap recentf-open-files]            #'consult-recent-file
+    [remap switch-to-buffer]              #'consult-buffer
+    [remap switch-to-buffer-other-window] #'consult-buffer-other-window
+    [remap switch-to-buffer-other-frame]  #'consult-buffer-other-frame
+    [remap yank-pop]                      #'consult-yank-pop)
+
   (setq consult-fd-args '((if
-     (executable-find "fdfind" 'remote)
-     "fdfind" "fd")
- "--full-path --color=never --hidden"))
+			      (executable-find "fdfind" 'remote)
+			      "fdfind" "fd")
+			  "--full-path --color=never --hidden"))
   (setq consult-ripgrep-args "rg --null --line-buffered --color=never --max-columns=1000 --path-separator /   
 --smart-case --no-heading --with-filename --line-number --search-zip --hidden"))
 
 (use-package marginalia
   :config
+  (mk/keybind minibuffer-local-map
+    "M-a" #'marginalia-cycle)
   (marginalia-mode))
 
 (use-package corfu
@@ -364,16 +390,5 @@ DEFINITIONS is a sequence of string and command pairs."
   "C-c s" mk/prefix-search-map
   "C-c o" mk/prefix-open-map
   "C-c q" mk/prefix-quit-map)
-
-(mk/keybind minibuffer-local-map
-  "M-a" #'marginalia-cycle)
-
-;;;;;;;;;;;;;
-;; Gimmics ;;
-;;;;;;;;;;;;;
-(use-package nerd-icons)
-(use-package nerd-icons-dired
-  :config
-  (add-hook 'dired-mode-hook #'nerd-icons-dired-mode))
 
 ;;; init.el ends here

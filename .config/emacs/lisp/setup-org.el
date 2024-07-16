@@ -72,11 +72,11 @@
    org-agenda-default-appointment-duration 60)
 
   (advice-add 'org-agenda-do-tree-to-indirect-buffer :after
-	      (defun my/org-agenda-collapse-indirect-buffer-tree (arg)
+	      (defun mk/org-agenda-collapse-indirect-buffer-tree (arg)
 		(with-current-buffer org-last-indirect-buffer
 		  (org-ctrl-c-tab) (org-fold-show-entry 'hide-drawers))))
 
-  (defun my/org-agenda-next-section (arg)
+  (defun mk/org-agenda-next-section (arg)
     (interactive "p")
     (when (> arg 0)
       (dotimes (_ arg)
@@ -85,7 +85,7 @@
           (forward-char 1)))))
 
   ;; FIXME this is broken
-  (defun my/org-agenda-previous-section (arg)
+  (defun mk/org-agenda-previous-section (arg)
     (interactive "p")
     (when (> arg 0)
       (dotimes (_ arg)
@@ -114,7 +114,7 @@
   (defun org-current-is-todo ()
     (member (org-get-todo-state) '("TODO" "STARTED")))
   
-  (defun my/org-agenda-should-skip-p ()
+  (defun mk/org-agenda-should-skip-p ()
     "Skip all but the first non-done entry."
     (let (should-skip-entry)
       (unless (org-current-is-todo)
@@ -142,9 +142,9 @@
 	(setq should-skip-entry t))
       should-skip-entry))
   
-  (defun my/org-agenda-skip-all-siblings-but-first ()
+  (defun mk/org-agenda-skip-all-siblings-but-first ()
     "Skip all but the first non-done entry."
-    (when (my/org-agenda-should-skip-p)
+    (when (mk/org-agenda-should-skip-p)
       (or (outline-next-heading)
           (goto-char (point-max)))))
   
@@ -152,7 +152,7 @@
 
         '(("n" "Project Next Actions" alltodo ""
            ((org-agenda-overriding-header "Project Next Actions")
-            (org-agenda-skip-function #'my/org-agenda-skip-all-siblings-but-first)))
+            (org-agenda-skip-function #'mk/org-agenda-skip-all-siblings-but-first)))
 
           ("P" "All Projects" tags "TODO=\"PROJECT\"&LEVEL>1|TODO=\"SUSPENDED\"" ;|TODO=\"CLOSED\"
            ((org-agenda-overriding-header "All Projects")))
@@ -192,7 +192,7 @@
             ))
 
           ("K" "Habits" tags "STYLE=\"habit\""
-           ((my/org-habit-show-graphs-everywhere t)
+           ((mk/org-habit-show-graphs-everywhere t)
             (org-agenda-overriding-header "Habits:")
             (org-habit-show-all-today t)))
           
@@ -241,7 +241,7 @@
 						  (search . " %i %-12:c")))
 		      (org-agenda-block-separator nil)
 		      (org-agenda-overriding-header "\n🚩 Project Next Actions\n")
-		      (org-agenda-skip-function #'my/org-agenda-skip-all-siblings-but-first)))
+		      (org-agenda-skip-function #'mk/org-agenda-skip-all-siblings-but-first)))
             (todo "WAITING"
                   ((org-agenda-overriding-header "\n💤 On Hold\n")
                    (org-agenda-block-separator nil))))))))
@@ -252,7 +252,7 @@
   :config
   (setq org-habit-preceding-days 42)
   
-  (defvar my/org-habit-show-graphs-everywhere nil
+  (defvar mk/org-habit-show-graphs-everywhere nil
     "If non-nil, show habit graphs in all types of agenda buffers.
 
 Normally, habits display consistency graphs only in
@@ -260,18 +260,18 @@ Normally, habits display consistency graphs only in
 buffers.  Set this variable to any non-nil variable to show
 consistency graphs in all Org mode agendas.")
 
-  (defun my/org-agenda-mark-habits ()
+  (defun mk/org-agenda-mark-habits ()
     "Mark all habits in current agenda for graph display.
 
-This function enforces `my/org-habit-show-graphs-everywhere' by
+This function enforces `mk/org-habit-show-graphs-everywhere' by
 marking all habits in the current agenda as such.  When run just
 before `org-agenda-finalize' (such as by advice; unfortunately,
 `org-agenda-finalize-hook' is run too late), this has the effect
 of displaying consistency graphs for these habits.
 
-When `my/org-habit-show-graphs-everywhere' is nil, this function
+When `mk/org-habit-show-graphs-everywhere' is nil, this function
 has no effect."
-    (when (and my/org-habit-show-graphs-everywhere
+    (when (and mk/org-habit-show-graphs-everywhere
                (not (get-text-property (point) 'org-series)))
       (let ((cursor (point))
             item data) 
@@ -284,7 +284,7 @@ has no effect."
                                (next-single-property-change cursor 'org-marker)
                                'org-habit-p data))))))
 
-  (advice-add #'org-agenda-finalize :before #'my/org-agenda-mark-habits))
+  (advice-add #'org-agenda-finalize :before #'mk/org-agenda-mark-habits))
 
 (use-package org-capture
   :ensure nil
