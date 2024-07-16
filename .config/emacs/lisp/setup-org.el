@@ -151,7 +151,11 @@
   (setq org-agenda-custom-commands
 
         '(("n" "Project Next Actions" alltodo ""
-           ((org-agenda-overriding-header "Project Next Actions")
+           ((org-agenda-prefix-format '((agenda . " %i %b %-12:c%?-12t% s")
+						  (todo . " %i %b")
+						  (tags . " %i %-12:c")
+						  (search . " %i %-12:c")))
+	    (org-agenda-overriding-header "Project Next Actions")
             (org-agenda-skip-function #'mk/org-agenda-skip-all-siblings-but-first)))
 
           ("P" "All Projects" tags "TODO=\"PROJECT\"&LEVEL>1|TODO=\"SUSPENDED\"" ;|TODO=\"CLOSED\"
