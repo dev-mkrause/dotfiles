@@ -108,6 +108,7 @@
   :config
   (setq  read-buffer-completion-ignore-case t
 	 read-file-name-completion-ignore-case t
+	 completion-ignore-case t
 	 read-answer-short t))
 
 (use-package tramp
@@ -227,10 +228,16 @@ DEFINITIONS is a sequence of string and command pairs."
 (use-package which-key
   :config (which-key-mode))
 
-(setq epa-file-name-regexp "\\.\\(gpg\\|\\asc\\)\\(~\\|\\.~[0-9]+~\\)?\\'")
-(epa-file-name-regexp-update)
+(use-package epg
+  :ensure nil
+  :config
+  (setq epa-file-name-regexp "\\.\\(gpg\\|\\asc\\)\\(~\\|\\.~[0-9]+~\\)?\\'")
+  (epa-file-name-regexp-update))
 
-(setq dictionary-server "dict.org")
+(use-package dictionary
+  :ensure nil
+  :config
+  (setq dictionary-server "dict.org"))
 
 ;;;;;;;;;;;;;;;;;;
 ;; Coding & IDE ;;
@@ -240,71 +247,7 @@ DEFINITIONS is a sequence of string and command pairs."
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;; Completion system ;;
 ;;;;;;;;;;;;;;;;;;;;;;;
-(use-package vertico
- :config
-  (setq vertico-cycle t)
-  (vertico-mode))
-
-(setq read-file-name-completion-ignore-case t
-      read-buffer-completion-ignore-case t
-      completion-ignore-case t)
-
-(use-package orderless
-  :config
-  (setq completion-styles '(orderless basic)
-      completion-category-overrides '((file (styles basic partial-completion)))))
-
-(use-package embark
-  :config
-  (mk/keybind global-map
-    "C-." #'embark-act)
-  (mk/keybind embark-file-map
-    "s" #'sudo-find-file))
-
-(use-package embark-consult)
-
-(use-package consult
-  :config
-  (mk/keybind (current-global-map)
-    [remap bookmark-jump]                 #'consult-bookmark
-    [remap evil-show-marks]               #'consult-mark
-    [remap evil-show-jumps]               #'+vertico/jump-list
-    [remap evil-show-registers]           #'consult-register
-    [remap goto-line]                     #'consult-goto-line
-    [remap imenu]                         #'consult-imenu
-    [remap Info-search]                   #'consult-info
-    [remap locate]                        #'consult-locate
-    [remap load-theme]                    #'consult-theme
-    [remap man]                           #'consult-man
-    [remap recentf-open-files]            #'consult-recent-file
-    [remap switch-to-buffer]              #'consult-buffer
-    [remap switch-to-buffer-other-window] #'consult-buffer-other-window
-    [remap switch-to-buffer-other-frame]  #'consult-buffer-other-frame
-    [remap yank-pop]                      #'consult-yank-pop)
-
-  (setq consult-fd-args '((if
-			      (executable-find "fdfind" 'remote)
-			      "fdfind" "fd")
-			  "--full-path --color=never --hidden"))
-  (setq consult-ripgrep-args "rg --null --line-buffered --color=never --max-columns=1000 --path-separator /   
---smart-case --no-heading --with-filename --line-number --search-zip --hidden"))
-
-(use-package marginalia
-  :config
-  (mk/keybind minibuffer-local-map
-    "M-a" #'marginalia-cycle)
-  (marginalia-mode))
-
-(use-package corfu
-  :config
-  (setq corfu-auto t
-    	corfu-auto-prefix 2
-    	corfu-cycle t)
-  (global-corfu-mode))
-
-(use-package nerd-icons-corfu
-  :config
-  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+(load (expand-file-name "lisp/setup-completion" user-emacs-directory))
 
 ;;;;;;;;;;;;;;
 ;; Personal ;;
@@ -350,8 +293,7 @@ DEFINITIONS is a sequence of string and command pairs."
   :doc "Prefix map for opening my stuff."
   :name "Open"
   "t" #'eat
-  "e" #'eshell
-  "r" #'recentf)
+  "e" #'eshell)
 
 (defvar-keymap mk/prefix-notes-map
   :doc "Prefix keymap for notes and organization."
@@ -379,6 +321,7 @@ DEFINITIONS is a sequence of string and command pairs."
 (defvar-keymap mk/prefix-files-map
   :doc "Prefix keymap for files."
   :name "Files"
+  "r" #'recentf
   "u" #'sudo-find-file
   "U" #'sudo-this-file)
 

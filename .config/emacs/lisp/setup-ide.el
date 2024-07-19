@@ -39,18 +39,26 @@
   (add-hook 'prog-mode-hook #'flymake-mode)
   (add-hook 'text-mode #'flymake-mode))
 
+(use-package compile
+  :ensure nil
+  :config
+  (mk/keybind prog-mode-map
+    "<f11>" #'compile
+    "<f12>" #'recompile))
+
 (use-package eglot
   :ensure nil
   :config
   (setq eglot-autoshutdown t))
 
+(use-package tempel)
+
 (use-package eat
   :config
   (setq eat-kill-buffer-on-exit t)
-  
-  (use-package eat
-    :after project
-    :bind ([remap project-shell] . eat-project)))
+
+  (mk/keybind project-prefix-map
+    [remap project-shell] #'eat-project))
 
 (use-package buffer-env
   :config
@@ -77,7 +85,22 @@
 (use-package geiser-guile
   :config
   (when (executable-find "guix")
-    (add-to-list 'geiser-guile-load-path
-		 (expand-file-name "~/.config/guix/current/share/guile/site/3.0"))))
+    ;; (add-to-list 'geiser-guile-load-path
+    ;; 		 (expand-file-name "~/.config/guix/current/share/guile/site/3.0"))
+    (load-file "~/dev/guix/etc/copyright.el")
+    (setq copyright-names-regexp
+	  (format "%s <%s>" user-full-name user-mail-address))
+    (with-eval-after-load 'geiser-guile
+      (add-to-list 'geiser-guile-load-path "~/dev/guix"))
+
+    ;; Yasnippet configuration
+    (with-eval-after-load 'yasnippet
+      (add-to-list 'yas-snippet-dirs "~/dev/guix/etc/snippets/yas"))
+    ;; Tempel configuration
+    (with-eval-after-load 'tempel
+      ;; Ensure tempel-path is a list -- it may also be a string.
+      (unless (listp 'tempel-path)
+	(setq tempel-path (list tempel-path)))
+      (add-to-list 'tempel-path "~/dev/guix/etc/snippets/tempel/*"))))
 
 ;;; setup-ide.el ends here

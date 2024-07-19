@@ -149,7 +149,6 @@
           (goto-char (point-max)))))
   
   (setq org-agenda-custom-commands
-
         '(("n" "Project Next Actions" alltodo ""
            ((org-agenda-prefix-format '((agenda . " %i %b %-12:c%?-12t% s")
 						  (todo . " %i %b")
@@ -192,7 +191,6 @@
            ((org-agenda-overriding-header "Maybe tasks:")
             (org-agenda-sorting-strategy '(user-defined-up))
             (org-agenda-prefix-format "%-11c%5(org-todo-age) ")
-            ;; (org-agenda-prefix-format "%-11c%5(org-todo-age) ")
             ))
 
           ("K" "Habits" tags "STYLE=\"habit\""
