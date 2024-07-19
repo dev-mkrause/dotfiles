@@ -1,4 +1,4 @@
-;;; early-init.el --- Early init file                -*- lexical-binding: t; -*-
+;;; setup-dired.el --- Dired setup                   -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024  Marvin Krause
 
@@ -23,24 +23,20 @@
 ;; 
 
 ;;; Code:
-(setq gc-cons-threshold most-positive-fixnum)
-(setq byte-compile-warnings '(not obsolete))
-(setq warning-suppress-log-types '((comp) (bytecomp)))
-(setq native-comp-async-report-warnings-errors 'silent)
 
-(setq package-enable-at-startup nil
-      package-quickstart nil
-      load-prefer-newer t)
+(use-package dired
+  :ensure nil
+  :config
+  (add-hook 'dired-mode-hook #'dired-hide-details-mode)
+  (add-hook 'dired-mode-hook #'toggle-truncate-lines)
+  (add-hook 'dired-mode-hook (lambda () #'dired-omit-mode))
 
-;; Prevent the glimpse of un-styled Emacs by disabling these UI elements early.
-(push '(menu-bar-lines . 0) default-frame-alist)
-(push '(tool-bar-lines . 0) default-frame-alist)
-(push '(vertical-scroll-bars) default-frame-alist)
+  (use-package dirvish
+    :after dired
+    :config (dirvish-override-dired-mode)))
 
-(setq frame-inhibit-implied-resize t)
+(use-package nerd-icons-dired
+  :config
+  (add-hook 'dired-mode-hook #'nerd-icons-dired-mode))
 
-(scroll-bar-mode -1)
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-
-;;; early-init.el ends here
+;;; setup-dired.el ends here
