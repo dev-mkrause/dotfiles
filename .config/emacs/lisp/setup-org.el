@@ -42,7 +42,8 @@
 	org-outline-path-complete-in-steps nil
         org-refile-use-outline-path 'file
         org-refile-use-cache nil
-	org-refile-targets '((org-agenda-files :todo . "PROJECT"))))
+	org-refile-targets '((org-agenda-files :todo . "PROJECT")
+			     ("~/Dokumente/org/sources.org" :level . 0))))
 
 (use-package org-agenda
   :ensure nil
