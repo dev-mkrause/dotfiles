@@ -54,6 +54,55 @@
 
 (use-package tempel)
 
+(use-package eshell
+  :ensure nil
+  :config
+  (defun my/eshell-default-prompt-fn ()
+    "Generate the prompt string for eshell. Use for `eshell-prompt-function'."
+    (concat (if (bobp) "" "\n")
+            (when (bound-and-true-p conda-env-current-name)
+              (propertize (concat "(" conda-env-current-name ") ")
+                          'face 'my/eshell-prompt-git-branch))
+            (let ((pwd (eshell/pwd)))
+              (propertize (if (equal pwd "~")
+                              pwd
+                            (abbreviate-file-name pwd))
+                          'face 'my/eshell-prompt-pwd))
+            (propertize (my/eshell--current-git-branch)
+                        'face 'my/eshell-prompt-git-branch)
+            (propertize " λ" 'face (if (zerop eshell-last-command-status) 'success 'error))
+            " "))
+
+  (defsubst my/eshell--current-git-branch ()
+    ;; TODO Refactor me
+    (cl-destructuring-bind (status . output)
+        (with-temp-buffer (cons
+                           (or (call-process "git" nil t nil "symbolic-ref" "-q" "--short" "HEAD")
+                               (call-process "git" nil t nil "describe" "--all" "--always" "HEAD")
+                               -1)
+                           (string-trim (buffer-string))))
+      (if (equal status 0)
+          (format " [%s]" output)
+        "")))
+
+  (setq eshell-banner-message
+        '(format "%s %s\n"
+                 (propertize (format " %s " (string-trim (buffer-name)))
+                             'face 'mode-line-highlight)
+                 (propertize (current-time-string)
+                             'face 'font-lock-keyword-face))
+        eshell-scroll-to-bottom-on-input 'all
+        eshell-scroll-to-bottom-on-output 'all
+        eshell-kill-processes-on-exit t
+        eshell-hist-ignoredups t
+
+        ;; em-glob
+        eshell-glob-case-insensitive t
+        eshell-error-if-no-glob t)
+
+  (setq eshell-prompt-regexp "^.* λ "
+        eshell-prompt-function #'my/eshell-default-prompt-fn))
+
 (use-package eat
   :config
   (setq eat-kill-buffer-on-exit t)
